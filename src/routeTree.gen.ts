@@ -16,6 +16,7 @@ import { Route as TechIndexRouteImport } from './routes/tech.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TechPayrollRouteImport } from './routes/tech.payroll'
 import { Route as TechCalculatorRouteImport } from './routes/tech.calculator'
+import { Route as TechAvailableRouteImport } from './routes/tech.available'
 import { Route as AdminTechniciansRouteImport } from './routes/admin.technicians'
 import { Route as AdminScheduleRouteImport } from './routes/admin.schedule'
 import { Route as AdminPayrollRouteImport } from './routes/admin.payroll'
@@ -57,6 +58,11 @@ const TechCalculatorRoute = TechCalculatorRouteImport.update({
   path: '/calculator',
   getParentRoute: () => TechRoute,
 } as any)
+const TechAvailableRoute = TechAvailableRouteImport.update({
+  id: '/available',
+  path: '/available',
+  getParentRoute: () => TechRoute,
+} as any)
 const AdminTechniciansRoute = AdminTechniciansRouteImport.update({
   id: '/technicians',
   path: '/technicians',
@@ -90,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/admin/': typeof AdminIndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/admin': typeof AdminIndexRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/admin/': typeof AdminIndexRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/admin/payroll'
     | '/admin/schedule'
     | '/admin/technicians'
+    | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/admin/'
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/admin/payroll'
     | '/admin/schedule'
     | '/admin/technicians'
+    | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/admin'
@@ -159,6 +170,7 @@ export interface FileRouteTypes {
     | '/admin/payroll'
     | '/admin/schedule'
     | '/admin/technicians'
+    | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/admin/'
@@ -224,6 +236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TechCalculatorRouteImport
       parentRoute: typeof TechRoute
     }
+    '/tech/available': {
+      id: '/tech/available'
+      path: '/available'
+      fullPath: '/tech/available'
+      preLoaderRoute: typeof TechAvailableRouteImport
+      parentRoute: typeof TechRoute
+    }
     '/admin/technicians': {
       id: '/admin/technicians'
       path: '/technicians'
@@ -279,6 +298,7 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface TechRouteChildren {
+  TechAvailableRoute: typeof TechAvailableRoute
   TechCalculatorRoute: typeof TechCalculatorRoute
   TechPayrollRoute: typeof TechPayrollRoute
   TechIndexRoute: typeof TechIndexRoute
@@ -287,6 +307,7 @@ interface TechRouteChildren {
 }
 
 const TechRouteChildren: TechRouteChildren = {
+  TechAvailableRoute: TechAvailableRoute,
   TechCalculatorRoute: TechCalculatorRoute,
   TechPayrollRoute: TechPayrollRoute,
   TechIndexRoute: TechIndexRoute,
@@ -304,3 +325,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
