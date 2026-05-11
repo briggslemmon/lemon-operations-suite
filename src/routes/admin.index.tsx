@@ -69,6 +69,7 @@ function AdminOverview() {
         )}
       </div>
 
+      <SectionTitle title="Revenue trend" />
       <div className="surface-card p-3 pt-5">
         <div className="h-56">
           <ResponsiveContainer>
