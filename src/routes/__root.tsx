@@ -10,6 +10,7 @@ import {
 
 import appCss from "../styles.css?url";
 import { RoleProvider } from "@/lib/role";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -116,6 +117,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <RoleProvider>
         <Outlet />
+        <Toaster position="top-center" richColors />
       </RoleProvider>
     </QueryClientProvider>
   );
