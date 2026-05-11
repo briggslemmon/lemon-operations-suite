@@ -162,19 +162,11 @@ export function quotePrice(input: {
   insideOutside: boolean;
   tracks: boolean;
   screens: number;
-  hardWater: number;
-  skylights: number;
-  twoStory: boolean;
-  difficulty: number; // 1-5
 }) {
   const base = input.windows * (input.insideOutside ? 14 : 9);
   const tracks = input.tracks ? input.windows * 4 : 0;
   const screens = input.screens * 5;
-  const hard = input.hardWater * 35;
-  const sky = input.skylights * 20;
-  const story = input.twoStory ? base * 0.2 : 0;
-  const diff = ((input.difficulty - 1) / 4) * (base * 0.25);
-  const total = base + tracks + screens + hard + sky + story + diff;
-  const minutes = Math.round(input.windows * 3.5 + input.skylights * 6 + (input.twoStory ? 20 : 0));
-  return { total: Math.round(total), minutes, breakdown: { base, tracks, screens, hard, sky, story, diff: Math.round(diff) } };
+  const total = base + tracks + screens;
+  const minutes = Math.round(input.windows * 3.5);
+  return { total: Math.round(total), minutes, breakdown: { base, tracks, screens } };
 }

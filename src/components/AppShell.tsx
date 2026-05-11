@@ -9,6 +9,7 @@ import {
   Calculator,
   LogOut,
   Briefcase,
+  Search,
 } from "lucide-react";
 import { useSession } from "@/lib/role";
 import { useEffect, type ReactNode } from "react";
@@ -18,6 +19,8 @@ type NavItem = { to: string; label: string; icon: ReactNode };
 const TECH_NAV: NavItem[] = [
   { to: "/tech", label: "Home", icon: <Home className="size-5" /> },
   { to: "/tech/jobs", label: "Jobs", icon: <ClipboardList className="size-5" /> },
+  { to: "/tech/available", label: "Available", icon: <Search className="size-5" /> },
+  { to: "/tech/calculator", label: "Quote", icon: <Calculator className="size-5" /> },
   { to: "/tech/payroll", label: "Pay", icon: <Wallet className="size-5" /> },
 ];
 
@@ -26,7 +29,6 @@ const ADMIN_NAV: NavItem[] = [
   { to: "/admin/schedule", label: "Schedule", icon: <Calendar className="size-5" /> },
   { to: "/admin/technicians", label: "Team", icon: <Users className="size-5" /> },
   { to: "/admin/payroll", label: "Payroll", icon: <Briefcase className="size-5" /> },
-  { to: "/admin/calculator", label: "Quote", icon: <Calculator className="size-5" /> },
 ];
 
 export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
@@ -60,12 +62,15 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
               </div>
             </div>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <div className="text-right leading-tight hidden sm:block">
               <div className="text-xs font-medium">{user.name}</div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 {user.role === "admin" ? "Owner" : "Technician"}
               </div>
+            </div>
+            <div className="size-9 rounded-full bg-secondary border border-border grid place-items-center text-lg" aria-hidden>
+              {user.avatar || "🙂"}
             </div>
             <button
               onClick={() => {
