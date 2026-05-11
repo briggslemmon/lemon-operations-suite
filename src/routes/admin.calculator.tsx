@@ -28,12 +28,12 @@ function Calc() {
       <p className="text-sm text-muted-foreground mt-1">Smart pricing · auto time estimates.</p>
 
       <div className="surface-card p-5 mt-5 grid gap-4">
-        <Number label="Windows" value={windows} onChange={setWindows} />
+        <NumField label="Windows" value={windows} onChange={setWindows} />
         <Toggle label="Inside + Outside" checked={insideOutside} onChange={setIO} hint="Otherwise outside only" />
         <Toggle label="Track cleaning" checked={tracks} onChange={setTracks} />
-        <Number label="Screens" value={screens} onChange={setScreens} />
-        <Number label="Hard-water windows" value={hardWater} onChange={setHard} />
-        <Number label="Skylights" value={skylights} onChange={setSky} />
+        <NumField label="Screens" value={screens} onChange={setScreens} />
+        <NumField label="Hard-water windows" value={hardWater} onChange={setHard} />
+        <NumField label="Skylights" value={skylights} onChange={setSky} />
         <Toggle label="Two-story home" checked={twoStory} onChange={setTwo} />
         <div>
           <div className="flex items-center justify-between text-sm">
@@ -71,7 +71,7 @@ function Calc() {
   );
 }
 
-function Number({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+function NumField({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
     <label className="flex items-center justify-between gap-3 text-sm">
       <span className="text-muted-foreground">{label}</span>

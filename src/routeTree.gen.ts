@@ -9,38 +9,186 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TechRouteImport } from './routes/tech'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TechIndexRouteImport } from './routes/tech.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as TechPayrollRouteImport } from './routes/tech.payroll'
+import { Route as AdminTechniciansRouteImport } from './routes/admin.technicians'
+import { Route as AdminScheduleRouteImport } from './routes/admin.schedule'
+import { Route as AdminPayrollRouteImport } from './routes/admin.payroll'
+import { Route as AdminCalculatorRouteImport } from './routes/admin.calculator'
+import { Route as TechJobsIndexRouteImport } from './routes/tech.jobs.index'
+import { Route as TechJobsJobIdRouteImport } from './routes/tech.jobs.$jobId'
 
+const TechRoute = TechRouteImport.update({
+  id: '/tech',
+  path: '/tech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TechIndexRoute = TechIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TechRoute,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const TechPayrollRoute = TechPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => TechRoute,
+} as any)
+const AdminTechniciansRoute = AdminTechniciansRouteImport.update({
+  id: '/technicians',
+  path: '/technicians',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminScheduleRoute = AdminScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPayrollRoute = AdminPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCalculatorRoute = AdminCalculatorRouteImport.update({
+  id: '/calculator',
+  path: '/calculator',
+  getParentRoute: () => AdminRoute,
+} as any)
+const TechJobsIndexRoute = TechJobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
+  getParentRoute: () => TechRoute,
+} as any)
+const TechJobsJobIdRoute = TechJobsJobIdRouteImport.update({
+  id: '/jobs/$jobId',
+  path: '/jobs/$jobId',
+  getParentRoute: () => TechRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/tech': typeof TechRouteWithChildren
+  '/admin/calculator': typeof AdminCalculatorRoute
+  '/admin/payroll': typeof AdminPayrollRoute
+  '/admin/schedule': typeof AdminScheduleRoute
+  '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/payroll': typeof TechPayrollRoute
+  '/admin/': typeof AdminIndexRoute
+  '/tech/': typeof TechIndexRoute
+  '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
+  '/tech/jobs/': typeof TechJobsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin/calculator': typeof AdminCalculatorRoute
+  '/admin/payroll': typeof AdminPayrollRoute
+  '/admin/schedule': typeof AdminScheduleRoute
+  '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/payroll': typeof TechPayrollRoute
+  '/admin': typeof AdminIndexRoute
+  '/tech': typeof TechIndexRoute
+  '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
+  '/tech/jobs': typeof TechJobsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/tech': typeof TechRouteWithChildren
+  '/admin/calculator': typeof AdminCalculatorRoute
+  '/admin/payroll': typeof AdminPayrollRoute
+  '/admin/schedule': typeof AdminScheduleRoute
+  '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/payroll': typeof TechPayrollRoute
+  '/admin/': typeof AdminIndexRoute
+  '/tech/': typeof TechIndexRoute
+  '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
+  '/tech/jobs/': typeof TechJobsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/tech'
+    | '/admin/calculator'
+    | '/admin/payroll'
+    | '/admin/schedule'
+    | '/admin/technicians'
+    | '/tech/payroll'
+    | '/admin/'
+    | '/tech/'
+    | '/tech/jobs/$jobId'
+    | '/tech/jobs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin/calculator'
+    | '/admin/payroll'
+    | '/admin/schedule'
+    | '/admin/technicians'
+    | '/tech/payroll'
+    | '/admin'
+    | '/tech'
+    | '/tech/jobs/$jobId'
+    | '/tech/jobs'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/tech'
+    | '/admin/calculator'
+    | '/admin/payroll'
+    | '/admin/schedule'
+    | '/admin/technicians'
+    | '/tech/payroll'
+    | '/admin/'
+    | '/tech/'
+    | '/tech/jobs/$jobId'
+    | '/tech/jobs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  TechRoute: typeof TechRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tech': {
+      id: '/tech'
+      path: '/tech'
+      fullPath: '/tech'
+      preLoaderRoute: typeof TechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +196,110 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tech/': {
+      id: '/tech/'
+      path: '/'
+      fullPath: '/tech/'
+      preLoaderRoute: typeof TechIndexRouteImport
+      parentRoute: typeof TechRoute
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/tech/payroll': {
+      id: '/tech/payroll'
+      path: '/payroll'
+      fullPath: '/tech/payroll'
+      preLoaderRoute: typeof TechPayrollRouteImport
+      parentRoute: typeof TechRoute
+    }
+    '/admin/technicians': {
+      id: '/admin/technicians'
+      path: '/technicians'
+      fullPath: '/admin/technicians'
+      preLoaderRoute: typeof AdminTechniciansRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/schedule': {
+      id: '/admin/schedule'
+      path: '/schedule'
+      fullPath: '/admin/schedule'
+      preLoaderRoute: typeof AdminScheduleRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/payroll': {
+      id: '/admin/payroll'
+      path: '/payroll'
+      fullPath: '/admin/payroll'
+      preLoaderRoute: typeof AdminPayrollRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/calculator': {
+      id: '/admin/calculator'
+      path: '/calculator'
+      fullPath: '/admin/calculator'
+      preLoaderRoute: typeof AdminCalculatorRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/tech/jobs/': {
+      id: '/tech/jobs/'
+      path: '/jobs'
+      fullPath: '/tech/jobs/'
+      preLoaderRoute: typeof TechJobsIndexRouteImport
+      parentRoute: typeof TechRoute
+    }
+    '/tech/jobs/$jobId': {
+      id: '/tech/jobs/$jobId'
+      path: '/jobs/$jobId'
+      fullPath: '/tech/jobs/$jobId'
+      preLoaderRoute: typeof TechJobsJobIdRouteImport
+      parentRoute: typeof TechRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminCalculatorRoute: typeof AdminCalculatorRoute
+  AdminPayrollRoute: typeof AdminPayrollRoute
+  AdminScheduleRoute: typeof AdminScheduleRoute
+  AdminTechniciansRoute: typeof AdminTechniciansRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminCalculatorRoute: AdminCalculatorRoute,
+  AdminPayrollRoute: AdminPayrollRoute,
+  AdminScheduleRoute: AdminScheduleRoute,
+  AdminTechniciansRoute: AdminTechniciansRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface TechRouteChildren {
+  TechPayrollRoute: typeof TechPayrollRoute
+  TechIndexRoute: typeof TechIndexRoute
+  TechJobsJobIdRoute: typeof TechJobsJobIdRoute
+  TechJobsIndexRoute: typeof TechJobsIndexRoute
+}
+
+const TechRouteChildren: TechRouteChildren = {
+  TechPayrollRoute: TechPayrollRoute,
+  TechIndexRoute: TechIndexRoute,
+  TechJobsJobIdRoute: TechJobsJobIdRoute,
+  TechJobsIndexRoute: TechJobsIndexRoute,
+}
+
+const TechRouteWithChildren = TechRoute._addFileChildren(TechRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  TechRoute: TechRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
