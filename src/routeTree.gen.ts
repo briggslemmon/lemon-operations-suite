@@ -15,10 +15,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TechIndexRouteImport } from './routes/tech.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TechPayrollRouteImport } from './routes/tech.payroll'
+import { Route as TechCalculatorRouteImport } from './routes/tech.calculator'
+import { Route as TechAvailableRouteImport } from './routes/tech.available'
 import { Route as AdminTechniciansRouteImport } from './routes/admin.technicians'
 import { Route as AdminScheduleRouteImport } from './routes/admin.schedule'
 import { Route as AdminPayrollRouteImport } from './routes/admin.payroll'
-import { Route as AdminCalculatorRouteImport } from './routes/admin.calculator'
 import { Route as TechJobsIndexRouteImport } from './routes/tech.jobs.index'
 import { Route as TechJobsJobIdRouteImport } from './routes/tech.jobs.$jobId'
 
@@ -52,6 +53,16 @@ const TechPayrollRoute = TechPayrollRouteImport.update({
   path: '/payroll',
   getParentRoute: () => TechRoute,
 } as any)
+const TechCalculatorRoute = TechCalculatorRouteImport.update({
+  id: '/calculator',
+  path: '/calculator',
+  getParentRoute: () => TechRoute,
+} as any)
+const TechAvailableRoute = TechAvailableRouteImport.update({
+  id: '/available',
+  path: '/available',
+  getParentRoute: () => TechRoute,
+} as any)
 const AdminTechniciansRoute = AdminTechniciansRouteImport.update({
   id: '/technicians',
   path: '/technicians',
@@ -65,11 +76,6 @@ const AdminScheduleRoute = AdminScheduleRouteImport.update({
 const AdminPayrollRoute = AdminPayrollRouteImport.update({
   id: '/payroll',
   path: '/payroll',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCalculatorRoute = AdminCalculatorRouteImport.update({
-  id: '/calculator',
-  path: '/calculator',
   getParentRoute: () => AdminRoute,
 } as any)
 const TechJobsIndexRoute = TechJobsIndexRouteImport.update({
@@ -87,10 +93,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/tech': typeof TechRouteWithChildren
-  '/admin/calculator': typeof AdminCalculatorRoute
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/available': typeof TechAvailableRoute
+  '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/admin/': typeof AdminIndexRoute
   '/tech/': typeof TechIndexRoute
@@ -99,10 +106,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin/calculator': typeof AdminCalculatorRoute
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/available': typeof TechAvailableRoute
+  '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/admin': typeof AdminIndexRoute
   '/tech': typeof TechIndexRoute
@@ -114,10 +122,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/tech': typeof TechRouteWithChildren
-  '/admin/calculator': typeof AdminCalculatorRoute
   '/admin/payroll': typeof AdminPayrollRoute
   '/admin/schedule': typeof AdminScheduleRoute
   '/admin/technicians': typeof AdminTechniciansRoute
+  '/tech/available': typeof TechAvailableRoute
+  '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/admin/': typeof AdminIndexRoute
   '/tech/': typeof TechIndexRoute
@@ -130,10 +139,11 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/tech'
-    | '/admin/calculator'
     | '/admin/payroll'
     | '/admin/schedule'
     | '/admin/technicians'
+    | '/tech/available'
+    | '/tech/calculator'
     | '/tech/payroll'
     | '/admin/'
     | '/tech/'
@@ -142,10 +152,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin/calculator'
     | '/admin/payroll'
     | '/admin/schedule'
     | '/admin/technicians'
+    | '/tech/available'
+    | '/tech/calculator'
     | '/tech/payroll'
     | '/admin'
     | '/tech'
@@ -156,10 +167,11 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/tech'
-    | '/admin/calculator'
     | '/admin/payroll'
     | '/admin/schedule'
     | '/admin/technicians'
+    | '/tech/available'
+    | '/tech/calculator'
     | '/tech/payroll'
     | '/admin/'
     | '/tech/'
@@ -217,6 +229,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TechPayrollRouteImport
       parentRoute: typeof TechRoute
     }
+    '/tech/calculator': {
+      id: '/tech/calculator'
+      path: '/calculator'
+      fullPath: '/tech/calculator'
+      preLoaderRoute: typeof TechCalculatorRouteImport
+      parentRoute: typeof TechRoute
+    }
+    '/tech/available': {
+      id: '/tech/available'
+      path: '/available'
+      fullPath: '/tech/available'
+      preLoaderRoute: typeof TechAvailableRouteImport
+      parentRoute: typeof TechRoute
+    }
     '/admin/technicians': {
       id: '/admin/technicians'
       path: '/technicians'
@@ -238,13 +264,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPayrollRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/calculator': {
-      id: '/admin/calculator'
-      path: '/calculator'
-      fullPath: '/admin/calculator'
-      preLoaderRoute: typeof AdminCalculatorRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/tech/jobs/': {
       id: '/tech/jobs/'
       path: '/jobs'
@@ -263,7 +282,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
-  AdminCalculatorRoute: typeof AdminCalculatorRoute
   AdminPayrollRoute: typeof AdminPayrollRoute
   AdminScheduleRoute: typeof AdminScheduleRoute
   AdminTechniciansRoute: typeof AdminTechniciansRoute
@@ -271,7 +289,6 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminCalculatorRoute: AdminCalculatorRoute,
   AdminPayrollRoute: AdminPayrollRoute,
   AdminScheduleRoute: AdminScheduleRoute,
   AdminTechniciansRoute: AdminTechniciansRoute,
@@ -281,6 +298,8 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface TechRouteChildren {
+  TechAvailableRoute: typeof TechAvailableRoute
+  TechCalculatorRoute: typeof TechCalculatorRoute
   TechPayrollRoute: typeof TechPayrollRoute
   TechIndexRoute: typeof TechIndexRoute
   TechJobsJobIdRoute: typeof TechJobsJobIdRoute
@@ -288,6 +307,8 @@ interface TechRouteChildren {
 }
 
 const TechRouteChildren: TechRouteChildren = {
+  TechAvailableRoute: TechAvailableRoute,
+  TechCalculatorRoute: TechCalculatorRoute,
   TechPayrollRoute: TechPayrollRoute,
   TechIndexRoute: TechIndexRoute,
   TechJobsJobIdRoute: TechJobsJobIdRoute,

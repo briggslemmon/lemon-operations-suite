@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { JOBS, UPSELL_MENU } from "@/lib/mock-data";
+import { UPSELL_MENU } from "@/lib/mock-data";
+import { useJobs } from "@/lib/store";
 import { useMemo, useState } from "react";
 import { Pill, GoldButton, GhostButton, money, money2, SectionTitle } from "@/components/ui-bits";
 import {
@@ -13,7 +14,8 @@ export const Route = createFileRoute("/tech/jobs/$jobId")({
 
 function JobDetail() {
   const { jobId } = useParams({ from: "/tech/jobs/$jobId" });
-  const job = JOBS.find((j) => j.id === jobId);
+  const jobs = useJobs();
+  const job = jobs.find((j) => j.id === jobId);
   const [qty, setQty] = useState<Record<string, number>>({});
   const [tip, setTip] = useState(0);
   const [discount, setDiscount] = useState(0);

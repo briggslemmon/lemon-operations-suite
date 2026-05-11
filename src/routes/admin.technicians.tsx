@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TECH_PERFORMANCE } from "@/lib/mock-data";
 import { SectionTitle, money } from "@/components/ui-bits";
-import { Star, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/admin/technicians")({
   component: Technicians,
@@ -30,8 +30,6 @@ function Technicians() {
                   <span>{t.jobs} jobs</span>
                   <span>·</span>
                   <span>{money(t.hourly)}/hr</span>
-                  <span>·</span>
-                  <span className="inline-flex items-center gap-0.5"><Star className="size-3 fill-[color:var(--gold)] text-[color:var(--gold)]" /> {t.rating}</span>
                 </div>
               </div>
               <div className="text-right">

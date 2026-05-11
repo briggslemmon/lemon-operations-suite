@@ -1,21 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { REVENUE_TREND, TECH_PERFORMANCE } from "@/lib/mock-data";
-import { StatCard, SectionTitle, money } from "@/components/ui-bits";
+import { useJobs, isUnassigned } from "@/lib/store";
+import { StatCard, SectionTitle, Pill, money } from "@/components/ui-bits";
 import {
   Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
   BarChart, Bar,
 } from "recharts";
-import { DollarSign, TrendingUp, Sparkles, Briefcase } from "lucide-react";
+import { DollarSign, TrendingUp, Sparkles, Briefcase, MapPin, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOverview,
 });
 
 function AdminOverview() {
+  const jobs = useJobs();
   const weekRevenue = REVENUE_TREND.reduce((s, d) => s + d.revenue, 0);
   const weekUpsells = REVENUE_TREND.reduce((s, d) => s + d.upsells, 0);
-  const jobs = TECH_PERFORMANCE.reduce((s, t) => s + t.jobs, 0);
-  const avgTicket = weekRevenue / jobs;
+  const totalJobs = TECH_PERFORMANCE.reduce((s, t) => s + t.jobs, 0);
+  const avgTicket = weekRevenue / totalJobs;
+
+  const upcoming = jobs
+    .filter((j) => +new Date(j.scheduledAt) >= Date.now() - 86400000)
+    .sort((a, b) => +new Date(a.scheduledAt) - +new Date(b.scheduledAt));
+  const claimed = upcoming.filter((j) => !isUnassigned(j));
+  const open = upcoming.filter(isUnassigned);
 
   return (
     <div>
@@ -28,9 +36,37 @@ function AdminOverview() {
 
       <div className="grid grid-cols-2 gap-3 mt-5">
         <StatCard label="Revenue · 7d" value={money(weekRevenue)} hint="+18% vs last week" icon={<DollarSign className="size-4" />} accent />
-        <StatCard label="Avg ticket" value={money(avgTicket)} hint={`${jobs} jobs`} icon={<TrendingUp className="size-4" />} />
+        <StatCard label="Avg ticket" value={money(avgTicket)} hint={`${totalJobs} jobs`} icon={<TrendingUp className="size-4" />} />
         <StatCard label="Upsell revenue" value={money(weekUpsells)} hint={`${Math.round((weekUpsells / weekRevenue) * 100)}% of total`} icon={<Sparkles className="size-4" />} />
         <StatCard label="Rev / labor hr" value={money(124)} hint="Target: $110" icon={<Briefcase className="size-4" />} />
+      </div>
+
+      <SectionTitle title={`Upcoming jobs · ${claimed.length} claimed · ${open.length} open`} />
+      <div className="grid gap-2.5">
+        {upcoming.slice(0, 6).map((j) => {
+          const isOpen = isUnassigned(j);
+          return (
+            <div key={j.id} className="surface-card p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="font-medium truncate">{j.customer}</div>
+                <Pill tone={isOpen ? "gold" : "success"}>{isOpen ? "Open" : j.tech.split(" ")[0]}</Pill>
+              </div>
+              <div className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-1">
+                <MapPin className="size-3" /> {j.address}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="size-3" />
+                  {new Date(j.scheduledAt).toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" })}
+                </span>
+                <span className="text-gold font-semibold">{money(j.baseQuote)}</span>
+              </div>
+            </div>
+          );
+        })}
+        {upcoming.length === 0 && (
+          <div className="surface-card p-5 text-sm text-muted-foreground text-center">No upcoming jobs.</div>
+        )}
       </div>
 
       <SectionTitle title="Revenue trend" />
