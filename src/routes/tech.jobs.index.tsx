@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { JOBS } from "@/lib/mock-data";
+import { useJobs } from "@/lib/store";
+import { useSession } from "@/lib/role";
 import { Pill, money } from "@/components/ui-bits";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
 
@@ -8,7 +9,11 @@ export const Route = createFileRoute("/tech/jobs/")({
 });
 
 function JobsList() {
-  const grouped = JOBS.reduce<Record<string, typeof JOBS>>((acc, j) => {
+  const all = useJobs();
+  const { user } = useSession();
+  const mine = all.filter((j) => j.tech === user?.name);
+
+  const grouped = mine.reduce<Record<string, typeof mine>>((acc, j) => {
     const k = new Date(j.scheduledAt).toDateString();
     (acc[k] ||= []).push(j);
     return acc;
@@ -17,7 +22,14 @@ function JobsList() {
   return (
     <div>
       <h1 className="text-2xl font-semibold tracking-tight">Jobs</h1>
-      <p className="text-sm text-muted-foreground mt-1">Your assigned work, in order.</p>
+      <p className="text-sm text-muted-foreground mt-1">Your assigned & claimed work.</p>
+
+      {mine.length === 0 && (
+        <div className="surface-card p-6 mt-5 text-center text-sm text-muted-foreground">
+          You have no jobs yet.{" "}
+          <Link to="/tech/available" className="text-gold font-medium">Browse available</Link>
+        </div>
+      )}
 
       <div className="mt-5 grid gap-5">
         {Object.entries(grouped).map(([day, jobs]) => (
