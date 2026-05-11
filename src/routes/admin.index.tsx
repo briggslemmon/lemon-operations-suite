@@ -41,7 +41,34 @@ function AdminOverview() {
         <StatCard label="Rev / labor hr" value={money(124)} hint="Target: $110" icon={<Briefcase className="size-4" />} />
       </div>
 
-      <SectionTitle title="Revenue trend" />
+      <SectionTitle title={`Upcoming jobs · ${claimed.length} claimed · ${open.length} open`} />
+      <div className="grid gap-2.5">
+        {upcoming.slice(0, 6).map((j) => {
+          const open = isUnassigned(j);
+          return (
+            <div key={j.id} className="surface-card p-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="font-medium truncate">{j.customer}</div>
+                <Pill tone={open ? "gold" : "success"}>{open ? "Open" : j.tech.split(" ")[0]}</Pill>
+              </div>
+              <div className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-1">
+                <MapPin className="size-3" /> {j.address}
+              </div>
+              <div className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="size-3" />
+                  {new Date(j.scheduledAt).toLocaleString("en-US", { weekday: "short", hour: "numeric", minute: "2-digit" })}
+                </span>
+                <span className="text-gold font-semibold">{money(j.baseQuote)}</span>
+              </div>
+            </div>
+          );
+        })}
+        {upcoming.length === 0 && (
+          <div className="surface-card p-5 text-sm text-muted-foreground text-center">No upcoming jobs.</div>
+        )}
+      </div>
+
       <div className="surface-card p-3 pt-5">
         <div className="h-56">
           <ResponsiveContainer>
