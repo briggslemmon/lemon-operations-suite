@@ -1,21 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { REVENUE_TREND, TECH_PERFORMANCE } from "@/lib/mock-data";
-import { StatCard, SectionTitle, money } from "@/components/ui-bits";
+import { useJobs, isUnassigned } from "@/lib/store";
+import { StatCard, SectionTitle, Pill, money } from "@/components/ui-bits";
 import {
   Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid,
   BarChart, Bar,
 } from "recharts";
-import { DollarSign, TrendingUp, Sparkles, Briefcase } from "lucide-react";
+import { DollarSign, TrendingUp, Sparkles, Briefcase, MapPin, Clock } from "lucide-react";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminOverview,
 });
 
 function AdminOverview() {
+  const jobs = useJobs();
   const weekRevenue = REVENUE_TREND.reduce((s, d) => s + d.revenue, 0);
   const weekUpsells = REVENUE_TREND.reduce((s, d) => s + d.upsells, 0);
-  const jobs = TECH_PERFORMANCE.reduce((s, t) => s + t.jobs, 0);
-  const avgTicket = weekRevenue / jobs;
+  const totalJobs = TECH_PERFORMANCE.reduce((s, t) => s + t.jobs, 0);
+  const avgTicket = weekRevenue / totalJobs;
+
+  const upcoming = jobs
+    .filter((j) => +new Date(j.scheduledAt) >= Date.now() - 86400000)
+    .sort((a, b) => +new Date(a.scheduledAt) - +new Date(b.scheduledAt));
+  const claimed = upcoming.filter((j) => !isUnassigned(j));
+  const open = upcoming.filter(isUnassigned);
 
   return (
     <div>
