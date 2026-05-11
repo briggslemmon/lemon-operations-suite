@@ -44,12 +44,12 @@ function AdminOverview() {
       <SectionTitle title={`Upcoming jobs · ${claimed.length} claimed · ${open.length} open`} />
       <div className="grid gap-2.5">
         {upcoming.slice(0, 6).map((j) => {
-          const open = isUnassigned(j);
+          const isOpen = isUnassigned(j);
           return (
             <div key={j.id} className="surface-card p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="font-medium truncate">{j.customer}</div>
-                <Pill tone={open ? "gold" : "success"}>{open ? "Open" : j.tech.split(" ")[0]}</Pill>
+                <Pill tone={isOpen ? "gold" : "success"}>{isOpen ? "Open" : j.tech.split(" ")[0]}</Pill>
               </div>
               <div className="text-xs text-muted-foreground truncate flex items-center gap-1 mt-1">
                 <MapPin className="size-3" /> {j.address}
