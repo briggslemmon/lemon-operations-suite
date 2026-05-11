@@ -36,7 +36,7 @@ function AdminOverview() {
 
       <div className="grid grid-cols-2 gap-3 mt-5">
         <StatCard label="Revenue · 7d" value={money(weekRevenue)} hint="+18% vs last week" icon={<DollarSign className="size-4" />} accent />
-        <StatCard label="Avg ticket" value={money(avgTicket)} hint={`${jobs} jobs`} icon={<TrendingUp className="size-4" />} />
+        <StatCard label="Avg ticket" value={money(avgTicket)} hint={`${totalJobs} jobs`} icon={<TrendingUp className="size-4" />} />
         <StatCard label="Upsell revenue" value={money(weekUpsells)} hint={`${Math.round((weekUpsells / weekRevenue) * 100)}% of total`} icon={<Sparkles className="size-4" />} />
         <StatCard label="Rev / labor hr" value={money(124)} hint="Target: $110" icon={<Briefcase className="size-4" />} />
       </div>
