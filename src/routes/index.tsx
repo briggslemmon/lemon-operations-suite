@@ -68,13 +68,6 @@ function SignIn() {
             <Field icon={<User className="size-4" />} placeholder="Your name" value={name} onChange={setName} />
             <Field icon={<Lock className="size-4" />} placeholder="Password" type="password" value={password} onChange={setPassword} />
 
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium mb-2">
-                Choose your avatar
-              </div>
-              <AvatarPicker value={avatar} onChange={setAvatar} size="sm" />
-            </div>
-
             {error && (
               <div className="text-xs text-destructive bg-destructive/10 border border-destructive/30 rounded-lg px-3 py-2">
                 {error}
