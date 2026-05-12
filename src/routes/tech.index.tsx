@@ -94,43 +94,6 @@ function TechHome() {
         </Pill>
       </div>
 
-      {/* Compact time clock */}
-      <div className="surface-card p-3 mt-4 flex items-center gap-3">
-        <div className="size-10 rounded-lg bg-[color:var(--gold)]/10 text-gold grid place-items-center">
-          <Clock className="size-5" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Time clock</div>
-          <div className="text-xl font-semibold tabular-nums tracking-tight leading-tight" data-tick={tick}>
-            {fmt(elapsed)}
-          </div>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {!clock.running ? (
-            <button
-              onClick={start}
-              className="h-9 px-3 rounded-lg inline-flex items-center gap-1.5 text-xs font-semibold bg-[color:var(--gold)] text-[oklch(0.16_0.01_90)]"
-            >
-              <Play className="size-3.5" /> {clock.accumulated > 0 ? "Resume" : "Start"}
-            </button>
-          ) : (
-            <button
-              onClick={pause}
-              className="h-9 px-3 rounded-lg inline-flex items-center gap-1.5 text-xs font-semibold bg-secondary border border-border"
-            >
-              <Pause className="size-3.5" /> Pause
-            </button>
-          )}
-          <button
-            onClick={stop}
-            disabled={!clock.running && clock.accumulated === 0}
-            className="size-9 grid place-items-center rounded-lg border border-border text-muted-foreground hover:text-foreground disabled:opacity-40"
-            aria-label="Stop"
-          >
-            <Square className="size-3.5" />
-          </button>
-        </div>
-      </div>
 
       <div className="grid grid-cols-2 gap-3 mt-4">
         <StatCard
