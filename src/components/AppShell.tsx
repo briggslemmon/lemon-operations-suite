@@ -13,6 +13,7 @@ import {
   Timer,
 } from "lucide-react";
 import { useSession } from "@/lib/role";
+import { ClockBar } from "@/components/ClockBar";
 import { useEffect, type ReactNode } from "react";
 
 type NavItem = { to: string; label: string; icon: ReactNode };
