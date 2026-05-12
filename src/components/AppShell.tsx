@@ -91,6 +91,11 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
 
       <main className="flex-1">
         <div className="mx-auto max-w-3xl px-4 py-5 pb-28">
+          {requiredRole === "tech" && (
+            <div className="mb-4">
+              <ClockBar />
+            </div>
+          )}
           <Outlet />
         </div>
       </main>
