@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSession, AVATARS } from "@/lib/role";
 import { useState, useEffect } from "react";
 import { GoldButton } from "@/components/ui-bits";
-import { AvatarPicker } from "@/components/AvatarPicker";
 import { Wrench, Crown, Lock, User } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -68,13 +67,6 @@ function SignIn() {
           <form onSubmit={submit} className="grid gap-3">
             <Field icon={<User className="size-4" />} placeholder="Your name" value={name} onChange={setName} />
             <Field icon={<Lock className="size-4" />} placeholder="Password" type="password" value={password} onChange={setPassword} />
-
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground font-medium mb-2">
-                Choose your avatar
-              </div>
-              <AvatarPicker value={avatar} onChange={setAvatar} size="sm" />
-            </div>
 
             {error && (
               <div className="text-xs text-destructive bg-destructive/10 border border-destructive/30 rounded-lg px-3 py-2">
