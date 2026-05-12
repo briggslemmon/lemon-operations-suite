@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TechIndexRouteImport } from './routes/tech.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as TechTimeRouteImport } from './routes/tech.time'
 import { Route as TechPayrollRouteImport } from './routes/tech.payroll'
 import { Route as TechCalculatorRouteImport } from './routes/tech.calculator'
 import { Route as TechAvailableRouteImport } from './routes/tech.available'
@@ -47,6 +48,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
+} as any)
+const TechTimeRoute = TechTimeRouteImport.update({
+  id: '/time',
+  path: '/time',
+  getParentRoute: () => TechRoute,
 } as any)
 const TechPayrollRoute = TechPayrollRouteImport.update({
   id: '/payroll',
@@ -99,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
+  '/tech/time': typeof TechTimeRoute
   '/admin/': typeof AdminIndexRoute
   '/tech/': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
+  '/tech/time': typeof TechTimeRoute
   '/admin': typeof AdminIndexRoute
   '/tech': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
+  '/tech/time': typeof TechTimeRoute
   '/admin/': typeof AdminIndexRoute
   '/tech/': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
+    | '/tech/time'
     | '/admin/'
     | '/tech/'
     | '/tech/jobs/$jobId'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
+    | '/tech/time'
     | '/admin'
     | '/tech'
     | '/tech/jobs/$jobId'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
+    | '/tech/time'
     | '/admin/'
     | '/tech/'
     | '/tech/jobs/$jobId'
@@ -221,6 +233,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
+    }
+    '/tech/time': {
+      id: '/tech/time'
+      path: '/time'
+      fullPath: '/tech/time'
+      preLoaderRoute: typeof TechTimeRouteImport
+      parentRoute: typeof TechRoute
     }
     '/tech/payroll': {
       id: '/tech/payroll'
@@ -301,6 +320,7 @@ interface TechRouteChildren {
   TechAvailableRoute: typeof TechAvailableRoute
   TechCalculatorRoute: typeof TechCalculatorRoute
   TechPayrollRoute: typeof TechPayrollRoute
+  TechTimeRoute: typeof TechTimeRoute
   TechIndexRoute: typeof TechIndexRoute
   TechJobsJobIdRoute: typeof TechJobsJobIdRoute
   TechJobsIndexRoute: typeof TechJobsIndexRoute
@@ -310,6 +330,7 @@ const TechRouteChildren: TechRouteChildren = {
   TechAvailableRoute: TechAvailableRoute,
   TechCalculatorRoute: TechCalculatorRoute,
   TechPayrollRoute: TechPayrollRoute,
+  TechTimeRoute: TechTimeRoute,
   TechIndexRoute: TechIndexRoute,
   TechJobsJobIdRoute: TechJobsJobIdRoute,
   TechJobsIndexRoute: TechJobsIndexRoute,
@@ -325,3 +346,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
