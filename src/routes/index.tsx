@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSession, AVATARS } from "@/lib/role";
 import { useState, useEffect } from "react";
 import { GoldButton } from "@/components/ui-bits";
-import { AvatarPicker } from "@/components/AvatarPicker";
 import { Wrench, Crown, Lock, User } from "lucide-react";
 
 export const Route = createFileRoute("/")({
