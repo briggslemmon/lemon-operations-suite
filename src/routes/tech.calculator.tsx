@@ -54,7 +54,7 @@ function Calc() {
           </div>
         </div>
 
-        <div className="text-sm text-muted-foreground mt-4 text-center">Estimated time: ~{minutes} minutes · {Math.ceil(minutes / 60)} labor hour{minutes > 60 ? "s" : ""}</div>
+        <div className="text-sm text-muted-foreground mt-4 text-center">Estimated time: ~{minutes} minutes</div>
       </div>
     </div>
   );
