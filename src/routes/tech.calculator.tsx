@@ -10,12 +10,11 @@ export const Route = createFileRoute("/tech/calculator")({
 function Calc() {
   const [windows, setWindows] = useState(20);
   const [insideOutside, setIO] = useState(true);
-  const [tracks, setTracks] = useState(true);
   const [screens, setScreens] = useState(10);
 
   const q = useMemo(
-    () => quotePrice({ windows, insideOutside, tracks, screens }),
-    [windows, insideOutside, tracks, screens],
+    () => quotePrice({ windows, insideOutside, tracks: false, screens }),
+    [windows, insideOutside, screens],
   );
 
   return (
@@ -25,9 +24,8 @@ function Calc() {
 
       <div className="surface-card p-5 mt-5 grid gap-4">
         <NumField label="Windows" value={windows} onChange={setWindows} />
-        <Toggle label="Inside + Outside" checked={insideOutside} onChange={setIO} hint="Otherwise outside only" />
-        <Toggle label="Track cleaning" checked={tracks} onChange={setTracks} />
         <NumField label="Screens" value={screens} onChange={setScreens} />
+        <Toggle label="Inside + Outside" checked={insideOutside} onChange={setIO} hint="Otherwise outside only" />
       </div>
 
       <SectionTitle title="Recommendation" />
