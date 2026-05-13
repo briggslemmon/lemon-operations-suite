@@ -13,13 +13,16 @@ function Calc() {
   const [screens, setScreens] = useState(10);
 
   const { accurate, suggested, discount, minutes } = useMemo(() => {
-    const accurate = windows * 10 + screens * 1;
-    const bump = accurate > 250 ? 75 : 50;
-    const suggested = accurate + bump;
+    const baseAccurate = windows * 10 + screens * 1;
+    const bump = baseAccurate > 250 ? 75 : 50;
+    const baseSuggested = baseAccurate + bump;
+    const multiplier = insideOutside ? 2 : 1;
+    const accurate = baseAccurate * multiplier;
+    const suggested = baseSuggested * multiplier;
     const discount = suggested - accurate;
-    const minutes = Math.round(windows * 3.5);
+    const minutes = windows * 4 * multiplier;
     return { accurate, suggested, discount, minutes };
-  }, [windows, screens]);
+  }, [windows, screens, insideOutside]);
 
   return (
     <div>
