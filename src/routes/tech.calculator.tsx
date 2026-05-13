@@ -12,10 +12,14 @@ function Calc() {
   const [insideOutside, setIO] = useState(true);
   const [screens, setScreens] = useState(10);
 
-  const q = useMemo(
-    () => quotePrice({ windows, insideOutside, tracks: false, screens }),
-    [windows, insideOutside, screens],
-  );
+  const { accurate, suggested, discount, minutes } = useMemo(() => {
+    const accurate = windows * 10 + screens * 1;
+    const bump = accurate > 250 ? 75 : 50;
+    const suggested = accurate + bump;
+    const discount = suggested - accurate;
+    const minutes = Math.round(windows * 3.5);
+    return { accurate, suggested, discount, minutes };
+  }, [windows, screens]);
 
   return (
     <div>
@@ -32,16 +36,22 @@ function Calc() {
       <div className="surface-card p-5 relative overflow-hidden">
         <div className="absolute -top-16 -right-16 size-40 rounded-full bg-[color:var(--gold)]/15 blur-3xl pointer-events-none" />
         <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Suggested price</div>
-        <div className="text-4xl font-semibold gold-gradient-text mt-1">{money(q.total)}</div>
-        <div className="text-sm text-muted-foreground mt-1">~{q.minutes} minutes · {Math.ceil(q.minutes / 60)} labor hour{q.minutes > 60 ? "s" : ""}</div>
+        <div className="text-4xl font-semibold gold-gradient-text mt-1">{money(suggested)}</div>
+        <div className="text-sm text-muted-foreground mt-1">~{minutes} minutes · {Math.ceil(minutes / 60)} labor hour{minutes > 60 ? "s" : ""}</div>
 
-        <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-          {Object.entries(q.breakdown).map(([k, v]) => (
-            <div key={k} className="bg-secondary/50 rounded-lg p-2">
-              <div className="text-muted-foreground uppercase tracking-wider text-[10px]">{k}</div>
-              <div className="font-medium mt-0.5">{money(v)}</div>
-            </div>
-          ))}
+        <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
+          <div className="bg-secondary/50 rounded-lg p-2">
+            <div className="text-muted-foreground uppercase tracking-wider text-[10px]">Suggested</div>
+            <div className="font-medium mt-0.5">{money(suggested)}</div>
+          </div>
+          <div className="bg-secondary/50 rounded-lg p-2">
+            <div className="text-muted-foreground uppercase tracking-wider text-[10px]">Accurate</div>
+            <div className="font-medium mt-0.5">{money(accurate)}</div>
+          </div>
+          <div className="bg-[color:var(--gold)]/10 border border-[color:var(--gold)]/30 rounded-lg p-2">
+            <div className="text-muted-foreground uppercase tracking-wider text-[10px]">Discount</div>
+            <div className="font-medium mt-0.5 text-gold">{money(discount)}</div>
+          </div>
         </div>
       </div>
     </div>
