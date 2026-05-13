@@ -35,24 +35,23 @@ function Calc() {
       <SectionTitle title="Recommendation" />
       <div className="surface-card p-5 relative overflow-hidden">
         <div className="absolute -top-16 -right-16 size-40 rounded-full bg-[color:var(--gold)]/15 blur-3xl pointer-events-none" />
-        <div className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground">Suggested price</div>
-        <div className="text-4xl font-semibold gold-gradient-text mt-1">{money(suggested)}</div>
-        <div className="text-sm text-muted-foreground mt-1">~{minutes} minutes · {Math.ceil(minutes / 60)} labor hour{minutes > 60 ? "s" : ""}</div>
 
-        <div className="mt-4 grid grid-cols-3 gap-2 text-xs">
-          <div className="bg-secondary/50 rounded-lg p-2">
-            <div className="text-muted-foreground uppercase tracking-wider text-[10px]">Suggested</div>
-            <div className="font-medium mt-0.5">{money(suggested)}</div>
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-[color:var(--success)]/10 border border-[color:var(--success)]/30 rounded-xl p-4">
+            <div className="uppercase tracking-wider text-[10px] text-[color:var(--success)]/80">Suggested</div>
+            <div className="mt-2 text-2xl font-semibold text-[color:var(--success)]">{money(suggested)}</div>
           </div>
-          <div className="bg-secondary/50 rounded-lg p-2">
-            <div className="text-muted-foreground uppercase tracking-wider text-[10px]">Accurate</div>
-            <div className="font-medium mt-0.5">{money(accurate)}</div>
+          <div className="bg-secondary/50 border border-border rounded-xl p-4">
+            <div className="uppercase tracking-wider text-[10px] text-muted-foreground">Accurate</div>
+            <div className="mt-2 text-2xl font-semibold text-foreground">{money(accurate)}</div>
           </div>
-          <div className="bg-[color:var(--gold)]/10 border border-[color:var(--gold)]/30 rounded-lg p-2">
-            <div className="text-muted-foreground uppercase tracking-wider text-[10px]">Discount</div>
-            <div className="font-medium mt-0.5 text-gold">{money(discount)}</div>
+          <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4">
+            <div className="uppercase tracking-wider text-[10px] text-destructive/80">Discount</div>
+            <div className="mt-2 text-2xl font-semibold text-destructive">{money(discount)}</div>
           </div>
         </div>
+
+        <div className="text-sm text-muted-foreground mt-4 text-center">~{minutes} minutes · {Math.ceil(minutes / 60)} labor hour{minutes > 60 ? "s" : ""}</div>
       </div>
     </div>
   );
