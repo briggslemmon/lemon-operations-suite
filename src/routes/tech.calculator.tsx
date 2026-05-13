@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { quotePrice } from "@/lib/mock-data";
+
 import { SectionTitle, money } from "@/components/ui-bits";
 
 export const Route = createFileRoute("/tech/calculator")({
