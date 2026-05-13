@@ -78,10 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Internal operations app for Lemmon Window Cleaning technicians and ownership." },
       { name: "author", content: "Lemmon Window Cleaning" },
       { property: "og:title", content: "Lemmon Window Cleaning — Operations" },
-      { property: "og:description", content: "Internal operations app for Lemmon Window Cleaning." },
+      { property: "og:description", content: "Internal operations app for Lemmon Window Cleaning technicians and ownership." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Lemmon Window Cleaning — Operations" },
+      { name: "twitter:description", content: "Internal operations app for Lemmon Window Cleaning technicians and ownership." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0d2e795c-97b1-48a4-a7f9-3f28f6cfa3f2/id-preview-d67385a2--dd1afd7e-db53-4a12-b9fb-45961161e72a.lovable.app-1778648858160.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0d2e795c-97b1-48a4-a7f9-3f28f6cfa3f2/id-preview-d67385a2--dd1afd7e-db53-4a12-b9fb-45961161e72a.lovable.app-1778648858160.png" },
     ],
     links: [
       {
