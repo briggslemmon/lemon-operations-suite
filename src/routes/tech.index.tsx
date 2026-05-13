@@ -99,7 +99,7 @@ function TechHome() {
         <StatCard
           label="This week"
           value={money(pay.total)}
-          hint={`${pay.hours} hrs · ${pay.jobs} jobs`}
+          hint="Earnings"
           icon={<DollarSign className="size-4" />}
           accent
         />
@@ -109,58 +109,57 @@ function TechHome() {
           hint={pay.guaranteeAdjustment > 0 ? `+${money(pay.guaranteeAdjustment)} guarantee` : "Above $15 min"}
           icon={<TrendingUp className="size-4" />}
         />
-        <StatCard label="My jobs" value={myJobsCount} hint="Assigned to you" />
-        <StatCard
-          label="Open jobs"
-          value={openCount}
-          hint="Available to claim"
-          icon={<Sparkles className="size-4" />}
-        />
+        <StatCard label="Jobs this week" value={pay.jobs} hint="Completed" />
+        <StatCard label="Hours worked" value={`${pay.hours}h`} hint="This week" icon={<Clock className="size-4" />} />
       </div>
 
-      <SectionTitle
-        title="Today's jobs"
-        action={
-          <Link to="/tech/jobs" className="text-xs text-gold font-medium inline-flex items-center gap-1">
-            All jobs <ArrowRight className="size-3" />
-          </Link>
-        }
-      />
-
-      <div className="grid gap-2.5">
-        {todayJobs.length === 0 && (
-          <div className="surface-card p-5 text-sm text-muted-foreground text-center">
-            No jobs today. Check{" "}
-            <Link to="/tech/available" className="text-gold font-medium">available jobs</Link>{" "}
-            to claim one.
-          </div>
-        )}
-        {todayJobs.map((j) => (
-          <Link
-            key={j.id}
-            to="/tech/jobs/$jobId"
-            params={{ jobId: j.id }}
-            className="surface-card p-4 flex items-center gap-4 hover:border-[color:var(--gold)]/40 transition"
-          >
-            <div className="text-center w-14 shrink-0">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                {new Date(j.scheduledAt).toLocaleTimeString("en-US", { hour: "numeric" }).replace(" ", "")}
-              </div>
-              <div className="text-base font-semibold leading-tight mt-0.5">
-                {new Date(j.scheduledAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
-              </div>
+      {(() => {
+        const upcoming = jobs
+          .filter((j) => j.tech === user?.name)
+          .sort((a, b) => new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime());
+        return (
+          <>
+            <SectionTitle title="Upcoming jobs" />
+            <div className="grid gap-2.5">
+              {upcoming.length === 0 && (
+                <div className="surface-card p-5 text-sm text-muted-foreground text-center">
+                  No upcoming jobs. Check{" "}
+                  <Link to="/tech/available" className="text-gold font-medium">available jobs</Link>{" "}
+                  to claim one.
+                </div>
+              )}
+              {upcoming.map((j) => (
+                <Link
+                  key={j.id}
+                  to="/tech/jobs/$jobId"
+                  params={{ jobId: j.id }}
+                  className="surface-card p-4 flex items-center gap-4 hover:border-[color:var(--gold)]/40 transition"
+                >
+                  <div className="text-center w-14 shrink-0">
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {new Date(j.scheduledAt).toLocaleDateString("en-US", { month: "short" })}
+                    </div>
+                    <div className="text-base font-semibold leading-tight mt-0.5">
+                      {new Date(j.scheduledAt).getDate()}
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-0.5">
+                      {new Date(j.scheduledAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                    </div>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium truncate">{j.customer}</div>
+                    <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                      <MapPin className="size-3" /> {j.address}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">{money(j.baseQuote)}</div>
+                  </div>
+                  <ArrowRight className="size-4 text-muted-foreground" />
+                </Link>
+              ))}
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="font-medium truncate">{j.customer}</div>
-              <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                <MapPin className="size-3" /> {j.address}
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">{money(j.baseQuote)}</div>
-            </div>
-            <ArrowRight className="size-4 text-muted-foreground" />
-          </Link>
-        ))}
-      </div>
+          </>
+        );
+      })()}
 
       <div className="mt-5 grid grid-cols-2 gap-2">
         <Link to="/tech/available"><GhostButton full>Browse available</GhostButton></Link>
