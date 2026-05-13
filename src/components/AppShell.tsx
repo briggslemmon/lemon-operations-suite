@@ -20,7 +20,6 @@ type NavItem = { to: string; label: string; icon: ReactNode };
 
 const TECH_NAV: NavItem[] = [
   { to: "/tech", label: "Home", icon: <Home className="size-5" /> },
-  { to: "/tech/jobs", label: "Jobs", icon: <ClipboardList className="size-5" /> },
   { to: "/tech/available", label: "Available", icon: <Search className="size-5" /> },
   { to: "/tech/time", label: "Time", icon: <Timer className="size-5" /> },
   { to: "/tech/calculator", label: "Quote", icon: <Calculator className="size-5" /> },
