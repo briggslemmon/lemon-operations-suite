@@ -57,7 +57,7 @@ function Calc() {
           </div>
         </div>
 
-        <div className="text-sm text-muted-foreground mt-4 text-center">Estimated time: ~{minutes} minutes</div>
+        <div className="text-sm text-muted-foreground mt-4 text-center">Estimated time: ~{timeLabel}</div>
       </div>
     </div>
   );
