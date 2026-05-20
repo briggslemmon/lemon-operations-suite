@@ -63,24 +63,28 @@ export function ClockBar() {
   return (
     <div
       aria-live="polite"
-      className={`flex items-center justify-between gap-2 px-2 h-6 text-[10px] uppercase tracking-[0.18em] transition-opacity ${
-        running ? "opacity-100" : "opacity-40 hover:opacity-70"
+      className={`relative w-full flex items-center justify-between gap-2 px-4 h-7 mb-3 rounded-md text-[11px] uppercase tracking-[0.2em] transition-all ${
+        running
+          ? "bg-gradient-to-r from-[oklch(0.82_0.16_92)] to-[oklch(0.7_0.18_88)] text-[oklch(0.16_0.01_90)] font-semibold shadow-[var(--shadow-glow)]"
+          : paused
+            ? "bg-secondary/60 border border-border text-muted-foreground"
+            : "bg-transparent text-muted-foreground/50 opacity-50 hover:opacity-80"
       }`}
     >
-      <div className="flex items-center gap-1.5 min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
         <span
           className={`relative inline-flex size-1.5 rounded-full ${
-            running ? "bg-[color:var(--gold)]" : paused ? "bg-muted-foreground" : "bg-border"
+            running ? "bg-[oklch(0.16_0.01_90)]" : paused ? "bg-muted-foreground" : "bg-border"
           }`}
         >
           {running && (
-            <span className="absolute inset-0 rounded-full bg-[color:var(--gold)] animate-ping opacity-60" />
+            <span className="absolute inset-0 rounded-full bg-[oklch(0.16_0.01_90)] animate-ping opacity-60" />
           )}
         </span>
-        <span className={running ? "text-gold font-medium" : "text-muted-foreground"}>{label}</span>
+        <span>{label}</span>
       </div>
       {(running || paused) && (
-        <span className="tabular-nums text-muted-foreground tracking-normal text-[11px] normal-case">
+        <span className="tabular-nums tracking-normal text-[12px] normal-case font-medium">
           {fmt(elapsed)}
         </span>
       )}
