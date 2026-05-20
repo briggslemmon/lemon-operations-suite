@@ -8,7 +8,6 @@ import {
   Timer,
 } from "lucide-react";
 import { useSession } from "@/lib/role";
-import { ClockBar } from "@/components/ClockBar";
 import { useEffect, type ReactNode } from "react";
 
 type NavItem = { to: string; label: string; icon: ReactNode };
@@ -78,7 +77,6 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
 
       <main className="flex-1">
         <div className="mx-auto max-w-3xl px-4 py-5 pb-28">
-          {requiredRole === "tech" && <ClockBar />}
           <Outlet />
         </div>
       </main>

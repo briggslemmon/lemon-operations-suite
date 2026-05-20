@@ -14,15 +14,18 @@ function Calc() {
 
   const { accurate, suggested, discount, minutes } = useMemo(() => {
     const baseAccurate = windows * 10 + screens * 1;
-    const bump = baseAccurate > 250 ? 75 : 50;
-    const baseSuggested = baseAccurate + bump;
     const multiplier = insideOutside ? 2 : 1;
     const accurate = baseAccurate * multiplier;
-    const suggested = baseSuggested * multiplier;
+    const suggested = accurate + 100;
     const discount = suggested - accurate;
     const minutes = windows * 4 * multiplier;
     return { accurate, suggested, discount, minutes };
   }, [windows, screens, insideOutside]);
+
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  const timeLabel =
+    hrs > 0 ? `${hrs} hr${hrs !== 1 ? "s" : ""} ${mins} min` : `${mins} min`;
 
   return (
     <div>
@@ -54,7 +57,7 @@ function Calc() {
           </div>
         </div>
 
-        <div className="text-sm text-muted-foreground mt-4 text-center">Estimated time: ~{minutes} minutes</div>
+        <div className="text-sm text-muted-foreground mt-4 text-center">Estimated time: ~{timeLabel}</div>
       </div>
     </div>
   );
