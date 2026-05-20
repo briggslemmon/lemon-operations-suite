@@ -1,14 +1,9 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import {
   Home,
-  Calendar,
-  ClipboardList,
   Wallet,
-  BarChart3,
-  Users,
   Calculator,
   LogOut,
-  Briefcase,
   Search,
   Timer,
 } from "lucide-react";
@@ -26,13 +21,6 @@ const TECH_NAV: NavItem[] = [
   { to: "/tech/payroll", label: "Pay", icon: <Wallet className="size-5" /> },
 ];
 
-const ADMIN_NAV: NavItem[] = [
-  { to: "/admin", label: "Overview", icon: <BarChart3 className="size-5" /> },
-  { to: "/admin/schedule", label: "Schedule", icon: <Calendar className="size-5" /> },
-  { to: "/admin/technicians", label: "Team", icon: <Users className="size-5" /> },
-  { to: "/admin/payroll", label: "Payroll", icon: <Briefcase className="size-5" /> },
-];
-
 export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
   const { user, signOut } = useSession();
   const nav = useNavigate();
@@ -41,19 +29,19 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
   useEffect(() => {
     if (!user) nav({ to: "/" });
     else if (user.role !== requiredRole) {
-      nav({ to: user.role === "admin" ? "/admin" : "/tech" });
+      nav({ to: "/tech" });
     }
   }, [user, requiredRole, nav]);
 
   if (!user || user.role !== requiredRole) return null;
 
-  const items = requiredRole === "tech" ? TECH_NAV : ADMIN_NAV;
+  const items = TECH_NAV;
 
   return (
     <div className="min-h-dvh flex flex-col">
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-border">
         <div className="mx-auto max-w-3xl px-4 h-14 flex items-center justify-between">
-          <Link to={requiredRole === "tech" ? "/tech" : "/admin"} className="flex items-center gap-2">
+          <Link to="/tech" className="flex items-center gap-2">
             <div className="size-8 rounded-lg bg-gradient-to-br from-[oklch(0.92_0.12_95)] to-[oklch(0.7_0.18_88)] flex items-center justify-center text-[oklch(0.16_0.01_90)] font-black text-sm shadow-[var(--shadow-glow)]">
               L
             </div>
@@ -68,7 +56,7 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
             <div className="text-right leading-tight hidden sm:block">
               <div className="text-xs font-medium">{user.name}</div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                {user.role === "admin" ? "Owner" : "Technician"}
+                Technician
               </div>
             </div>
             <div className="size-9 rounded-full bg-secondary border border-border grid place-items-center text-lg" aria-hidden>

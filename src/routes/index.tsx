@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSession, AVATARS } from "@/lib/role";
 import { useState, useEffect } from "react";
 import { GoldButton } from "@/components/ui-bits";
-import { Wrench, Crown, Lock, User } from "lucide-react";
+import { Lock, User } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: SignIn,
@@ -11,25 +11,24 @@ export const Route = createFileRoute("/")({
 function SignIn() {
   const { user, signIn } = useSession();
   const nav = useNavigate();
-  const [role, setRole] = useState<"tech" | "admin">("tech");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [avatar, setAvatar] = useState(AVATARS[0]);
+  const [avatar] = useState(AVATARS[0]);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (user) nav({ to: user.role === "admin" ? "/admin" : "/tech" });
+    if (user) nav({ to: "/tech" });
   }, [user, nav]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const res = signIn(role, name, password, avatar);
+    const res = signIn("tech", name, password, avatar);
     if (!res.ok) {
       setError(res.error);
       return;
     }
-    nav({ to: role === "admin" ? "/admin" : "/tech" });
+    nav({ to: "/tech" });
   };
 
   return (
@@ -42,28 +41,10 @@ function SignIn() {
           <h1 className="mt-5 text-2xl font-semibold tracking-tight">
             Lemmon <span className="gold-gradient-text">Operations</span>
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to continue.
-          </p>
+          <p className="mt-2 text-sm text-muted-foreground">Sign in to continue.</p>
         </div>
 
         <div className="surface-card p-5">
-          <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-secondary/60 border border-border mb-4">
-            {(["tech", "admin"] as const).map((r) => (
-              <button
-                key={r}
-                type="button"
-                onClick={() => setRole(r)}
-                className={`h-9 rounded-lg text-xs font-medium inline-flex items-center justify-center gap-1.5 transition ${
-                  role === r ? "bg-background shadow text-foreground" : "text-muted-foreground"
-                }`}
-              >
-                {r === "tech" ? <Wrench className="size-3.5" /> : <Crown className="size-3.5" />}
-                {r === "tech" ? "Technician" : "Owner"}
-              </button>
-            ))}
-          </div>
-
           <form onSubmit={submit} className="grid gap-3">
             <Field icon={<User className="size-4" />} placeholder="Your name" value={name} onChange={setName} />
             <Field icon={<Lock className="size-4" />} placeholder="Password" type="password" value={password} onChange={setPassword} />
@@ -81,7 +62,7 @@ function SignIn() {
         </div>
 
         <p className="mt-6 text-center text-[11px] text-muted-foreground">
-          Demo passwords · Tech: <span className="font-mono">tech123</span> · Owner: <span className="font-mono">owner123</span>
+          Demo password · <span className="font-mono">tech123</span>
         </p>
       </div>
     </div>
