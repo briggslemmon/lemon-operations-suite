@@ -15,7 +15,6 @@ const Ctx = createContext<RoleCtx | null>(null);
 const KEY = "lwc.session.v2";
 
 // Demo passwords. In a real build these would be hashed server-side.
-const OWNER_PASSWORD = "owner123";
 const TECH_PASSWORD = "tech123";
 
 export function RoleProvider({ children }: { children: ReactNode }) {
@@ -24,14 +23,17 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setUser(JSON.parse(raw));
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.role === "tech") setUser(parsed);
+      }
     } catch {}
   }, []);
 
-  const signIn: RoleCtx["signIn"] = (role, name, password, avatar) => {
-    const expected = role === "admin" ? OWNER_PASSWORD : TECH_PASSWORD;
+  const signIn: RoleCtx["signIn"] = (_role, name, password, avatar) => {
+    const role: Role = "tech";
     if (!name.trim()) return { ok: false, error: "Enter your name." };
-    if (password !== expected) return { ok: false, error: "Incorrect password." };
+    if (password !== TECH_PASSWORD) return { ok: false, error: "Incorrect password." };
     const u: SessionUser = { name: name.trim(), role, avatar };
     setUser(u);
     localStorage.setItem(KEY, JSON.stringify(u));

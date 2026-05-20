@@ -10,28 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TechRouteImport } from './routes/tech'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TechIndexRouteImport } from './routes/tech.index'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as TechTimeRouteImport } from './routes/tech.time'
 import { Route as TechPayrollRouteImport } from './routes/tech.payroll'
 import { Route as TechCalculatorRouteImport } from './routes/tech.calculator'
 import { Route as TechAvailableRouteImport } from './routes/tech.available'
-import { Route as AdminTechniciansRouteImport } from './routes/admin.technicians'
-import { Route as AdminScheduleRouteImport } from './routes/admin.schedule'
-import { Route as AdminPayrollRouteImport } from './routes/admin.payroll'
 import { Route as TechJobsIndexRouteImport } from './routes/tech.jobs.index'
 import { Route as TechJobsJobIdRouteImport } from './routes/tech.jobs.$jobId'
 
 const TechRoute = TechRouteImport.update({
   id: '/tech',
   path: '/tech',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,11 +33,6 @@ const TechIndexRoute = TechIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => TechRoute,
-} as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminRoute,
 } as any)
 const TechTimeRoute = TechTimeRouteImport.update({
   id: '/time',
@@ -69,21 +54,6 @@ const TechAvailableRoute = TechAvailableRouteImport.update({
   path: '/available',
   getParentRoute: () => TechRoute,
 } as any)
-const AdminTechniciansRoute = AdminTechniciansRouteImport.update({
-  id: '/technicians',
-  path: '/technicians',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminScheduleRoute = AdminScheduleRouteImport.update({
-  id: '/schedule',
-  path: '/schedule',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPayrollRoute = AdminPayrollRouteImport.update({
-  id: '/payroll',
-  path: '/payroll',
-  getParentRoute: () => AdminRoute,
-} as any)
 const TechJobsIndexRoute = TechJobsIndexRouteImport.update({
   id: '/jobs/',
   path: '/jobs/',
@@ -97,30 +67,21 @@ const TechJobsJobIdRoute = TechJobsJobIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/tech': typeof TechRouteWithChildren
-  '/admin/payroll': typeof AdminPayrollRoute
-  '/admin/schedule': typeof AdminScheduleRoute
-  '/admin/technicians': typeof AdminTechniciansRoute
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/tech/time': typeof TechTimeRoute
-  '/admin/': typeof AdminIndexRoute
   '/tech/': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
   '/tech/jobs/': typeof TechJobsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin/payroll': typeof AdminPayrollRoute
-  '/admin/schedule': typeof AdminScheduleRoute
-  '/admin/technicians': typeof AdminTechniciansRoute
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/tech/time': typeof TechTimeRoute
-  '/admin': typeof AdminIndexRoute
   '/tech': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
   '/tech/jobs': typeof TechJobsIndexRoute
@@ -128,16 +89,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/tech': typeof TechRouteWithChildren
-  '/admin/payroll': typeof AdminPayrollRoute
-  '/admin/schedule': typeof AdminScheduleRoute
-  '/admin/technicians': typeof AdminTechniciansRoute
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/tech/time': typeof TechTimeRoute
-  '/admin/': typeof AdminIndexRoute
   '/tech/': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
   '/tech/jobs/': typeof TechJobsIndexRoute
@@ -146,46 +102,32 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/tech'
-    | '/admin/payroll'
-    | '/admin/schedule'
-    | '/admin/technicians'
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/tech/time'
-    | '/admin/'
     | '/tech/'
     | '/tech/jobs/$jobId'
     | '/tech/jobs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin/payroll'
-    | '/admin/schedule'
-    | '/admin/technicians'
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/tech/time'
-    | '/admin'
     | '/tech'
     | '/tech/jobs/$jobId'
     | '/tech/jobs'
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/tech'
-    | '/admin/payroll'
-    | '/admin/schedule'
-    | '/admin/technicians'
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/tech/time'
-    | '/admin/'
     | '/tech/'
     | '/tech/jobs/$jobId'
     | '/tech/jobs/'
@@ -193,7 +135,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
   TechRoute: typeof TechRouteWithChildren
 }
 
@@ -204,13 +145,6 @@ declare module '@tanstack/react-router' {
       path: '/tech'
       fullPath: '/tech'
       preLoaderRoute: typeof TechRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -226,13 +160,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/tech/'
       preLoaderRoute: typeof TechIndexRouteImport
       parentRoute: typeof TechRoute
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
     }
     '/tech/time': {
       id: '/tech/time'
@@ -262,27 +189,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TechAvailableRouteImport
       parentRoute: typeof TechRoute
     }
-    '/admin/technicians': {
-      id: '/admin/technicians'
-      path: '/technicians'
-      fullPath: '/admin/technicians'
-      preLoaderRoute: typeof AdminTechniciansRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/schedule': {
-      id: '/admin/schedule'
-      path: '/schedule'
-      fullPath: '/admin/schedule'
-      preLoaderRoute: typeof AdminScheduleRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/payroll': {
-      id: '/admin/payroll'
-      path: '/payroll'
-      fullPath: '/admin/payroll'
-      preLoaderRoute: typeof AdminPayrollRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/tech/jobs/': {
       id: '/tech/jobs/'
       path: '/jobs'
@@ -299,22 +205,6 @@ declare module '@tanstack/react-router' {
     }
   }
 }
-
-interface AdminRouteChildren {
-  AdminPayrollRoute: typeof AdminPayrollRoute
-  AdminScheduleRoute: typeof AdminScheduleRoute
-  AdminTechniciansRoute: typeof AdminTechniciansRoute
-  AdminIndexRoute: typeof AdminIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminPayrollRoute: AdminPayrollRoute,
-  AdminScheduleRoute: AdminScheduleRoute,
-  AdminTechniciansRoute: AdminTechniciansRoute,
-  AdminIndexRoute: AdminIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface TechRouteChildren {
   TechAvailableRoute: typeof TechAvailableRoute
@@ -340,7 +230,6 @@ const TechRouteWithChildren = TechRoute._addFileChildren(TechRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
   TechRoute: TechRouteWithChildren,
 }
 export const routeTree = rootRouteImport
