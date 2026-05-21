@@ -59,8 +59,12 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
                 Technician
               </div>
             </div>
-            <div className="size-9 rounded-full bg-secondary border border-border grid place-items-center text-lg" aria-hidden>
-              {user.avatar || "🙂"}
+            <div className="size-9 rounded-full bg-secondary border border-border grid place-items-center text-lg overflow-hidden" aria-hidden>
+              {user.avatar?.startsWith("data:") ? (
+                <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span>{user.avatar || "🙂"}</span>
+              )}
             </div>
             <button
               onClick={() => {
