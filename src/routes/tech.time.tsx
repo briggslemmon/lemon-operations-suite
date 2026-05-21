@@ -88,18 +88,15 @@ function TimePage() {
     setClock({ startedAt: null, accumulated: 0, running: false });
   };
 
-  const status = clock.running ? "On the clock" : clock.accumulated > 0 ? "Paused" : "Off";
+  const [pendingDelete, setPendingDelete] = useState<number | null>(null);
 
   return (
     <div>
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight mt-1">Time clock</h1>
+      <div>
+        <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+          {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
         </div>
-        <Pill tone={clock.running ? "gold" : "default"}>{status}</Pill>
+        <h1 className="text-2xl font-semibold tracking-tight mt-1">Time clock</h1>
       </div>
 
       <div className="surface-card p-6 mt-4 text-center">
