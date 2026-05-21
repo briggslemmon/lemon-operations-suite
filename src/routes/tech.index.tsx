@@ -4,7 +4,7 @@ import { useJobs, isUnassigned } from "@/lib/store";
 import { useSession } from "@/lib/role";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { StatCard, SectionTitle, GoldButton, GhostButton, Pill, money, money2 } from "@/components/ui-bits";
+import { StatCard, SectionTitle, GoldButton, GhostButton, money, money2 } from "@/components/ui-bits";
 import { Play, Pause, Square, MapPin, Clock, ArrowRight, DollarSign, TrendingUp, Sparkles, Bell } from "lucide-react";
 
 export const Route = createFileRoute("/tech/")({
