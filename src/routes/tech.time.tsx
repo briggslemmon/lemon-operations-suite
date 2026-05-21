@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Play, Pause, Square, Clock } from "lucide-react";
-import { Pill } from "@/components/ui-bits";
+import { Play, Pause, Square, Clock, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/tech/time")({
   component: TimePage,
