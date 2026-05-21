@@ -22,7 +22,7 @@ function TechPayroll() {
       <div className="grid grid-cols-2 gap-3 mt-5">
         <StatCard label="This week" value={money(current.total)} hint={`${current.hours} hrs · ${current.jobs} jobs`} accent />
         <StatCard label="Hourly avg" value={money2(current.hourly)} hint={current.guaranteeAdjustment > 0 ? "Guarantee applied" : "Above $15 min"} />
-        <StatCard label="Commission" value={money(current.commission)} hint="35% solo rate" />
+        <StatCard label="Total tips" value={money(current.tips)} hint="This week" />
         <StatCard label="Upsell bonus" value={money(current.upsellBonus)} hint="20% of upsells" />
       </div>
 
