@@ -17,7 +17,7 @@ function Calc() {
     const accurate = windows * 5 * multiplier + screens * 1;
     const suggested = accurate + 100;
     const discount = suggested - accurate;
-    const minutes = windows * 4 * multiplier;
+    const minutes = windows * 4 * multiplier + 30;
     return { accurate, suggested, discount, minutes };
   }, [windows, screens, insideOutside]);
 
