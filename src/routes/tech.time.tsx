@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Play, Pause, Square, Clock } from "lucide-react";
-import { Pill } from "@/components/ui-bits";
+import { Play, Pause, Square, Clock, Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/tech/time")({
   component: TimePage,
@@ -89,18 +88,15 @@ function TimePage() {
     setClock({ startedAt: null, accumulated: 0, running: false });
   };
 
-  const status = clock.running ? "On the clock" : clock.accumulated > 0 ? "Paused" : "Off";
+  const [pendingDelete, setPendingDelete] = useState<number | null>(null);
 
   return (
     <div>
-      <div className="flex items-end justify-between">
-        <div>
-          <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
-            {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight mt-1">Time clock</h1>
+      <div>
+        <div className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+          {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
         </div>
-        <Pill tone={clock.running ? "gold" : "default"}>{status}</Pill>
+        <h1 className="text-2xl font-semibold tracking-tight mt-1">Time clock</h1>
       </div>
 
       <div className="surface-card p-6 mt-4 text-center">
@@ -166,6 +162,7 @@ function TimePage() {
           )}
           {entries.map((e, i) => {
             const dur = (e.out - e.in) / 1000;
+            const confirming = pendingDelete === e.in;
             return (
               <div key={i} className="surface-card p-3 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
@@ -175,6 +172,33 @@ function TimePage() {
                   </div>
                 </div>
                 <div className="text-sm font-semibold tabular-nums">{fmt(dur)}</div>
+                {confirming ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => {
+                        setEntries((prev) => prev.filter((x) => x.in !== e.in));
+                        setPendingDelete(null);
+                      }}
+                      className="h-8 px-2 rounded-md text-[11px] font-semibold bg-destructive text-destructive-foreground"
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      onClick={() => setPendingDelete(null)}
+                      className="h-8 px-2 rounded-md text-[11px] font-medium border border-border text-muted-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setPendingDelete(e.in)}
+                    className="size-8 grid place-items-center rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
+                    aria-label="Delete entry"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                )}
               </div>
             );
           })}
