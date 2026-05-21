@@ -162,6 +162,7 @@ function TimePage() {
           )}
           {entries.map((e, i) => {
             const dur = (e.out - e.in) / 1000;
+            const confirming = pendingDelete === e.in;
             return (
               <div key={i} className="surface-card p-3 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
@@ -171,6 +172,33 @@ function TimePage() {
                   </div>
                 </div>
                 <div className="text-sm font-semibold tabular-nums">{fmt(dur)}</div>
+                {confirming ? (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => {
+                        setEntries((prev) => prev.filter((x) => x.in !== e.in));
+                        setPendingDelete(null);
+                      }}
+                      className="h-8 px-2 rounded-md text-[11px] font-semibold bg-destructive text-destructive-foreground"
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      onClick={() => setPendingDelete(null)}
+                      className="h-8 px-2 rounded-md text-[11px] font-medium border border-border text-muted-foreground"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setPendingDelete(e.in)}
+                    className="size-8 grid place-items-center rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
+                    aria-label="Delete entry"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                )}
               </div>
             );
           })}
