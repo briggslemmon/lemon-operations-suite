@@ -89,9 +89,6 @@ function TechHome() {
             Hey, <span className="gold-gradient-text">{user?.name.split(" ")[0]}</span>
           </h1>
         </div>
-        <Pill tone={clock.running ? "gold" : "default"}>
-          {clock.running ? "On the clock" : clock.accumulated > 0 ? "Paused" : "Off"}
-        </Pill>
       </div>
 
 
