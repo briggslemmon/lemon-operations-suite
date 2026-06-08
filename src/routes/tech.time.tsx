@@ -88,7 +88,39 @@ function TimePage() {
     setClock({ startedAt: null, accumulated: 0, running: false });
   };
 
-  const [pendingDelete, setPendingDelete] = useState<number | null>(null);
+  const [editing, setEditing] = useState<number | null>(null);
+  const [editIn, setEditIn] = useState("");
+  const [editOut, setEditOut] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  function toLocalInput(ts: number) {
+    const d = new Date(ts);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  function openEdit(e: Entry) {
+    setEditing(e.in);
+    setEditIn(toLocalInput(e.in));
+    setEditOut(toLocalInput(e.out));
+    setConfirmDelete(false);
+  }
+  function closeEdit() {
+    setEditing(null);
+    setConfirmDelete(false);
+  }
+  function saveEdit() {
+    const inMs = new Date(editIn).getTime();
+    const outMs = new Date(editOut).getTime();
+    if (!Number.isFinite(inMs) || !Number.isFinite(outMs) || outMs <= inMs) return;
+    setEntries((prev) =>
+      prev.map((x) => (x.in === editing ? { in: inMs, out: outMs } : x)),
+    );
+    closeEdit();
+  }
+  function deleteEntry() {
+    setEntries((prev) => prev.filter((x) => x.in !== editing));
+    closeEdit();
+  }
 
   return (
     <div>
