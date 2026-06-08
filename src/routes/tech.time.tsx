@@ -194,7 +194,6 @@ function TimePage() {
           )}
           {entries.map((e, i) => {
             const dur = (e.out - e.in) / 1000;
-            const confirming = pendingDelete === e.in;
             return (
               <div key={i} className="surface-card p-3 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
@@ -204,36 +203,91 @@ function TimePage() {
                   </div>
                 </div>
                 <div className="text-sm font-semibold tabular-nums">{fmt(dur)}</div>
-                {confirming ? (
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => {
-                        setEntries((prev) => prev.filter((x) => x.in !== e.in));
-                        setPendingDelete(null);
-                      }}
-                      className="h-8 px-2 rounded-md text-[11px] font-semibold bg-destructive text-destructive-foreground"
-                    >
-                      Confirm
-                    </button>
-                    <button
-                      onClick={() => setPendingDelete(null)}
-                      className="h-8 px-2 rounded-md text-[11px] font-medium border border-border text-muted-foreground"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => setPendingDelete(e.in)}
-                    className="size-8 grid place-items-center rounded-md border border-border text-muted-foreground hover:text-destructive hover:border-destructive transition-colors"
-                    aria-label="Delete entry"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </button>
-                )}
+                <button
+                  onClick={() => openEdit(e)}
+                  className="h-8 px-3 rounded-md text-[11px] font-semibold border border-border text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Edit
+                </button>
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {editing !== null && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm grid place-items-center p-4"
+          onClick={closeEdit}
+        >
+          <div
+            className="surface-card p-5 w-full max-w-sm"
+            onClick={(ev) => ev.stopPropagation()}
+          >
+            <div className="text-sm font-semibold mb-3">Edit time entry</div>
+            <label className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              Time in
+            </label>
+            <input
+              type="datetime-local"
+              value={editIn}
+              onChange={(ev) => setEditIn(ev.target.value)}
+              className="w-full mt-1 h-10 px-3 rounded-md bg-secondary border border-border text-sm"
+            />
+            <label className="block text-[10px] uppercase tracking-[0.14em] text-muted-foreground mt-3">
+              Time out
+            </label>
+            <input
+              type="datetime-local"
+              value={editOut}
+              onChange={(ev) => setEditOut(ev.target.value)}
+              className="w-full mt-1 h-10 px-3 rounded-md bg-secondary border border-border text-sm"
+            />
+
+            <div className="flex items-center justify-between gap-2 mt-5">
+              {confirmDelete ? (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={deleteEntry}
+                    className="h-9 px-3 rounded-md text-xs font-semibold bg-destructive text-destructive-foreground inline-flex items-center gap-1"
+                  >
+                    <Trash2 className="size-3.5" /> Confirm delete
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(false)}
+                    className="h-9 px-3 rounded-md text-xs font-medium border border-border text-muted-foreground"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="h-9 px-3 rounded-md text-xs font-semibold border border-border text-muted-foreground hover:text-destructive hover:border-destructive inline-flex items-center gap-1"
+                >
+                  <Trash2 className="size-3.5" /> Delete
+                </button>
+              )}
+              {!confirmDelete && (
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={closeEdit}
+                    className="h-9 px-3 rounded-md text-xs font-medium border border-border text-muted-foreground"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={saveEdit}
+                    className="h-9 px-4 rounded-md text-xs font-semibold bg-[color:var(--gold)] text-[oklch(0.16_0.01_90)]"
+                  >
+                    Save
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
         </div>
       </div>
     </div>
