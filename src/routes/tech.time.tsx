@@ -288,8 +288,6 @@ function TimePage() {
           </div>
         </div>
       )}
-        </div>
-      </div>
     </div>
   );
 }
