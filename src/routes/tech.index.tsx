@@ -65,11 +65,11 @@ function TechHome() {
         <StatCard
           label="Hourly avg"
           value={money2(pay.hourly)}
-          hint={pay.guaranteeAdjustment > 0 ? `+${money(pay.guaranteeAdjustment)} guarantee` : "Above $15 min"}
+          hint={pay.hourly >= 15 ? "Above $15 min" : "Below guarantee"}
           icon={<TrendingUp className="size-4" />}
         />
         <StatCard label="Jobs this week" value={pay.jobs} hint="Completed" />
-        <StatCard label="Hours worked" value={`${pay.hours}h`} hint="This week" icon={<Clock className="size-4" />} />
+        <StatCard label="Hours worked" value={`${pay.hours.toFixed(1)}h`} hint="This week" icon={<Clock className="size-4" />} />
       </div>
 
       {(() => {
