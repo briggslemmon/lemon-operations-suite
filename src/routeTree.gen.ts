@@ -10,18 +10,28 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TechRouteImport } from './routes/tech'
+import { Route as OwnerRouteImport } from './routes/owner'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TechIndexRouteImport } from './routes/tech.index'
+import { Route as OwnerIndexRouteImport } from './routes/owner.index'
 import { Route as TechTimeRouteImport } from './routes/tech.time'
 import { Route as TechPayrollRouteImport } from './routes/tech.payroll'
 import { Route as TechCalculatorRouteImport } from './routes/tech.calculator'
 import { Route as TechAvailableRouteImport } from './routes/tech.available'
+import { Route as OwnerTeamRouteImport } from './routes/owner.team'
+import { Route as OwnerPayrollRouteImport } from './routes/owner.payroll'
+import { Route as OwnerIntakeRouteImport } from './routes/owner.intake'
 import { Route as TechJobsIndexRouteImport } from './routes/tech.jobs.index'
 import { Route as TechJobsJobIdRouteImport } from './routes/tech.jobs.$jobId'
 
 const TechRoute = TechRouteImport.update({
   id: '/tech',
   path: '/tech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerRoute = OwnerRouteImport.update({
+  id: '/owner',
+  path: '/owner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -33,6 +43,11 @@ const TechIndexRoute = TechIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => TechRoute,
+} as any)
+const OwnerIndexRoute = OwnerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OwnerRoute,
 } as any)
 const TechTimeRoute = TechTimeRouteImport.update({
   id: '/time',
@@ -54,6 +69,21 @@ const TechAvailableRoute = TechAvailableRouteImport.update({
   path: '/available',
   getParentRoute: () => TechRoute,
 } as any)
+const OwnerTeamRoute = OwnerTeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerPayrollRoute = OwnerPayrollRouteImport.update({
+  id: '/payroll',
+  path: '/payroll',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerIntakeRoute = OwnerIntakeRouteImport.update({
+  id: '/intake',
+  path: '/intake',
+  getParentRoute: () => OwnerRoute,
+} as any)
 const TechJobsIndexRoute = TechJobsIndexRouteImport.update({
   id: '/jobs/',
   path: '/jobs/',
@@ -67,21 +97,30 @@ const TechJobsJobIdRoute = TechJobsJobIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/owner': typeof OwnerRouteWithChildren
   '/tech': typeof TechRouteWithChildren
+  '/owner/intake': typeof OwnerIntakeRoute
+  '/owner/payroll': typeof OwnerPayrollRoute
+  '/owner/team': typeof OwnerTeamRoute
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/tech/time': typeof TechTimeRoute
+  '/owner/': typeof OwnerIndexRoute
   '/tech/': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
   '/tech/jobs/': typeof TechJobsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/owner/intake': typeof OwnerIntakeRoute
+  '/owner/payroll': typeof OwnerPayrollRoute
+  '/owner/team': typeof OwnerTeamRoute
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/tech/time': typeof TechTimeRoute
+  '/owner': typeof OwnerIndexRoute
   '/tech': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
   '/tech/jobs': typeof TechJobsIndexRoute
@@ -89,11 +128,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/owner': typeof OwnerRouteWithChildren
   '/tech': typeof TechRouteWithChildren
+  '/owner/intake': typeof OwnerIntakeRoute
+  '/owner/payroll': typeof OwnerPayrollRoute
+  '/owner/team': typeof OwnerTeamRoute
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
   '/tech/time': typeof TechTimeRoute
+  '/owner/': typeof OwnerIndexRoute
   '/tech/': typeof TechIndexRoute
   '/tech/jobs/$jobId': typeof TechJobsJobIdRoute
   '/tech/jobs/': typeof TechJobsIndexRoute
@@ -102,32 +146,46 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/owner'
     | '/tech'
+    | '/owner/intake'
+    | '/owner/payroll'
+    | '/owner/team'
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/tech/time'
+    | '/owner/'
     | '/tech/'
     | '/tech/jobs/$jobId'
     | '/tech/jobs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/owner/intake'
+    | '/owner/payroll'
+    | '/owner/team'
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/tech/time'
+    | '/owner'
     | '/tech'
     | '/tech/jobs/$jobId'
     | '/tech/jobs'
   id:
     | '__root__'
     | '/'
+    | '/owner'
     | '/tech'
+    | '/owner/intake'
+    | '/owner/payroll'
+    | '/owner/team'
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
     | '/tech/time'
+    | '/owner/'
     | '/tech/'
     | '/tech/jobs/$jobId'
     | '/tech/jobs/'
@@ -135,6 +193,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OwnerRoute: typeof OwnerRouteWithChildren
   TechRoute: typeof TechRouteWithChildren
 }
 
@@ -145,6 +204,13 @@ declare module '@tanstack/react-router' {
       path: '/tech'
       fullPath: '/tech'
       preLoaderRoute: typeof TechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/owner': {
+      id: '/owner'
+      path: '/owner'
+      fullPath: '/owner'
+      preLoaderRoute: typeof OwnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -160,6 +226,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/tech/'
       preLoaderRoute: typeof TechIndexRouteImport
       parentRoute: typeof TechRoute
+    }
+    '/owner/': {
+      id: '/owner/'
+      path: '/'
+      fullPath: '/owner/'
+      preLoaderRoute: typeof OwnerIndexRouteImport
+      parentRoute: typeof OwnerRoute
     }
     '/tech/time': {
       id: '/tech/time'
@@ -189,6 +262,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TechAvailableRouteImport
       parentRoute: typeof TechRoute
     }
+    '/owner/team': {
+      id: '/owner/team'
+      path: '/team'
+      fullPath: '/owner/team'
+      preLoaderRoute: typeof OwnerTeamRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/owner/payroll': {
+      id: '/owner/payroll'
+      path: '/payroll'
+      fullPath: '/owner/payroll'
+      preLoaderRoute: typeof OwnerPayrollRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/owner/intake': {
+      id: '/owner/intake'
+      path: '/intake'
+      fullPath: '/owner/intake'
+      preLoaderRoute: typeof OwnerIntakeRouteImport
+      parentRoute: typeof OwnerRoute
+    }
     '/tech/jobs/': {
       id: '/tech/jobs/'
       path: '/jobs'
@@ -205,6 +299,22 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface OwnerRouteChildren {
+  OwnerIntakeRoute: typeof OwnerIntakeRoute
+  OwnerPayrollRoute: typeof OwnerPayrollRoute
+  OwnerTeamRoute: typeof OwnerTeamRoute
+  OwnerIndexRoute: typeof OwnerIndexRoute
+}
+
+const OwnerRouteChildren: OwnerRouteChildren = {
+  OwnerIntakeRoute: OwnerIntakeRoute,
+  OwnerPayrollRoute: OwnerPayrollRoute,
+  OwnerTeamRoute: OwnerTeamRoute,
+  OwnerIndexRoute: OwnerIndexRoute,
+}
+
+const OwnerRouteWithChildren = OwnerRoute._addFileChildren(OwnerRouteChildren)
 
 interface TechRouteChildren {
   TechAvailableRoute: typeof TechAvailableRoute
@@ -230,6 +340,7 @@ const TechRouteWithChildren = TechRoute._addFileChildren(TechRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OwnerRoute: OwnerRouteWithChildren,
   TechRoute: TechRouteWithChildren,
 }
 export const routeTree = rootRouteImport

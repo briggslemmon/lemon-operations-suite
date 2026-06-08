@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSession } from "@/lib/role";
 import { useState, useEffect, useRef } from "react";
 import { GoldButton } from "@/components/ui-bits";
-import { Lock, User, Mail, Phone, Camera } from "lucide-react";
+import { Lock, User, Mail, Phone, Camera, AtSign } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: SignInPage,
@@ -10,14 +10,18 @@ export const Route = createFileRoute("/")({
 
 type Mode = "signin" | "signup";
 
+function landingFor(role: "tech" | "owner") {
+  return role === "owner" ? "/owner" : "/tech";
+}
+
 function SignInPage() {
-  const { user, signIn, signUp } = useSession();
+  const { user, hydrated, signIn, signUp } = useSession();
   const nav = useNavigate();
   const [mode, setMode] = useState<Mode>("signin");
 
   useEffect(() => {
-    if (user) nav({ to: "/tech" });
-  }, [user, nav]);
+    if (hydrated && user) nav({ to: landingFor(user.role) });
+  }, [user, hydrated, nav]);
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center px-6 py-10">
@@ -50,33 +54,36 @@ function SignInPage() {
         </div>
 
         <div className="surface-card p-5">
-          {mode === "signin" ? <SignInForm signIn={signIn} onDone={() => nav({ to: "/tech" })} /> : <SignUpForm signUp={signUp} onDone={() => nav({ to: "/tech" })} />}
+          {mode === "signin"
+            ? <SignInForm signIn={signIn} onDone={(u) => nav({ to: landingFor(u.role) })} />
+            : <SignUpForm signUp={signUp} onDone={(u) => nav({ to: landingFor(u.role) })} />}
         </div>
 
-        <p className="mt-6 text-center text-[11px] text-muted-foreground">
-          Demo · <span className="font-mono">demo@demo.com</span> / <span className="font-mono">demo</span>
-        </p>
+        <div className="mt-6 text-center text-[11px] text-muted-foreground leading-relaxed">
+          Tech demo · <span className="font-mono">demo</span> / <span className="font-mono">demo</span><br />
+          Owner demo · <span className="font-mono">owner</span> / <span className="font-mono">owner</span>
+        </div>
       </div>
     </div>
   );
 }
 
-function SignInForm({ signIn, onDone }: { signIn: ReturnType<typeof useSession>["signIn"]; onDone: () => void }) {
-  const [email, setEmail] = useState("");
+function SignInForm({ signIn, onDone }: { signIn: ReturnType<typeof useSession>["signIn"]; onDone: (u: { role: "tech" | "owner" }) => void }) {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const res = signIn(email, password);
+    const res = signIn(username, password);
     if (!res.ok) return setError(res.error);
-    onDone();
+    onDone(res.user);
   };
 
   return (
     <form onSubmit={submit} className="grid gap-3">
-      <Field icon={<Mail className="size-4" />} placeholder="Email" type="email" value={email} onChange={setEmail} />
+      <Field icon={<AtSign className="size-4" />} placeholder="Username" value={username} onChange={setUsername} autoCapitalize="none" />
       <Field icon={<Lock className="size-4" />} placeholder="Password" type="password" value={password} onChange={setPassword} />
       {error && <ErrorBox msg={error} />}
       <GoldButton full size="lg" type="submit">Sign in</GoldButton>
@@ -84,7 +91,8 @@ function SignInForm({ signIn, onDone }: { signIn: ReturnType<typeof useSession>[
   );
 }
 
-function SignUpForm({ signUp, onDone }: { signUp: ReturnType<typeof useSession>["signUp"]; onDone: () => void }) {
+function SignUpForm({ signUp, onDone }: { signUp: ReturnType<typeof useSession>["signUp"]; onDone: (u: { role: "tech" | "owner" }) => void }) {
+  const [username, setUsername] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -105,9 +113,9 @@ function SignUpForm({ signUp, onDone }: { signUp: ReturnType<typeof useSession>[
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    const res = signUp({ firstName, lastName, email, phone, password, avatar });
+    const res = signUp({ username, firstName, lastName, email, phone, password, avatar });
     if (!res.ok) return setError(res.error);
-    onDone();
+    onDone(res.user);
   };
 
   return (
@@ -131,6 +139,7 @@ function SignUpForm({ signUp, onDone }: { signUp: ReturnType<typeof useSession>[
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
       </div>
 
+      <Field icon={<AtSign className="size-4" />} placeholder="Username" value={username} onChange={setUsername} autoCapitalize="none" />
       <div className="grid grid-cols-2 gap-2">
         <Field icon={<User className="size-4" />} placeholder="First name" value={firstName} onChange={setFirstName} />
         <Field icon={<User className="size-4" />} placeholder="Last name" value={lastName} onChange={setLastName} />
@@ -154,8 +163,8 @@ function ErrorBox({ msg }: { msg: string }) {
 }
 
 function Field({
-  icon, placeholder, value, onChange, type = "text",
-}: { icon: React.ReactNode; placeholder: string; value: string; onChange: (v: string) => void; type?: string }) {
+  icon, placeholder, value, onChange, type = "text", autoCapitalize,
+}: { icon: React.ReactNode; placeholder: string; value: string; onChange: (v: string) => void; type?: string; autoCapitalize?: string }) {
   return (
     <div className="relative">
       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">{icon}</span>
@@ -164,6 +173,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
+        autoCapitalize={autoCapitalize}
         className="w-full h-11 pl-9 pr-3 rounded-xl bg-secondary/60 border border-border focus:outline-none focus:ring-2 focus:ring-[color:var(--ring)] text-sm"
       />
     </div>

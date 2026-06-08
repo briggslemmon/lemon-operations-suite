@@ -1,42 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { calcWeeklyPay } from "@/lib/mock-data";
 import { useJobs, isUnassigned } from "@/lib/store";
+import { useCompletedJobs, payForTech, startOfWeek } from "@/lib/completed";
 import { useSession } from "@/lib/role";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { StatCard, SectionTitle, GoldButton, GhostButton, money, money2 } from "@/components/ui-bits";
-import { Play, Pause, Square, MapPin, Clock, ArrowRight, DollarSign, TrendingUp, Sparkles, Bell } from "lucide-react";
+import { MapPin, Clock, ArrowRight, DollarSign, TrendingUp, Bell } from "lucide-react";
 
 export const Route = createFileRoute("/tech/")({
   component: TechHome,
 });
 
-type ClockState = { startedAt: number | null; accumulated: number; running: boolean };
-
-function fmt(seconds: number) {
-  const s = Math.max(0, Math.floor(seconds));
-  const h = String(Math.floor(s / 3600)).padStart(2, "0");
-  const m = String(Math.floor((s % 3600) / 60)).padStart(2, "0");
-  const ss = String(s % 60).padStart(2, "0");
-  return `${h}:${m}:${ss}`;
-}
-
 function TechHome() {
   const { user } = useSession();
   const jobs = useJobs();
-  const [clock, setClock] = useState<ClockState>({ startedAt: null, accumulated: 0, running: false });
-  const [tick, setTick] = useState(0);
+  const completed = useCompletedJobs();
   const notifiedRef = useRef(false);
-
-  useEffect(() => {
-    if (!clock.running) return;
-    const t = setInterval(() => setTick((n) => n + 1), 1000);
-    return () => clearInterval(t);
-  }, [clock.running]);
-
-  const elapsed =
-    clock.accumulated +
-    (clock.running && clock.startedAt ? (Date.now() - clock.startedAt) / 1000 : 0);
 
   const todayJobs = jobs.filter((j) => {
     if (j.tech !== user?.name) return false;
@@ -45,7 +24,6 @@ function TechHome() {
     return d.toDateString() === t.toDateString();
   });
 
-  // Notify on first load if there are jobs today
   useEffect(() => {
     if (notifiedRef.current || !user) return;
     if (todayJobs.length > 0) {
@@ -58,25 +36,9 @@ function TechHome() {
     }
   }, [todayJobs, user]);
 
-  const myJobsCount = jobs.filter((j) => j.tech === user?.name).length;
-  const openCount = jobs.filter(isUnassigned).length;
-
-  const pay = calcWeeklyPay({
-    hours: 31,
-    jobs: 11,
-    baseRevenue: 4820,
-    upsellRevenue: 940,
-    tips: 145,
-  });
-
-  const start = () => setClock({ startedAt: Date.now(), accumulated: clock.accumulated, running: true });
-  const pause = () =>
-    setClock((c) => ({
-      startedAt: null,
-      accumulated: c.accumulated + (c.startedAt ? (Date.now() - c.startedAt) / 1000 : 0),
-      running: false,
-    }));
-  const stop = () => setClock({ startedAt: null, accumulated: 0, running: false });
+  const week0 = startOfWeek();
+  const weekEnd = new Date(week0); weekEnd.setDate(week0.getDate() + 7); weekEnd.setMilliseconds(-1);
+  const pay = payForTech(completed, user?.name ?? "", week0, weekEnd);
 
   return (
     <div>
@@ -103,11 +65,11 @@ function TechHome() {
         <StatCard
           label="Hourly avg"
           value={money2(pay.hourly)}
-          hint={pay.guaranteeAdjustment > 0 ? `+${money(pay.guaranteeAdjustment)} guarantee` : "Above $15 min"}
+          hint={pay.hourly >= 15 ? "Above $15 min" : "Below guarantee"}
           icon={<TrendingUp className="size-4" />}
         />
         <StatCard label="Jobs this week" value={pay.jobs} hint="Completed" />
-        <StatCard label="Hours worked" value={`${pay.hours}h`} hint="This week" icon={<Clock className="size-4" />} />
+        <StatCard label="Hours worked" value={`${pay.hours.toFixed(1)}h`} hint="This week" icon={<Clock className="size-4" />} />
       </div>
 
       {(() => {

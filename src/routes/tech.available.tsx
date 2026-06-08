@@ -46,7 +46,10 @@ function Available() {
   const claim = (id: string, customer: string) => {
     if (!user) return;
     claimJob(id, user.name);
-    toast.success(`Claimed ${customer}`, { description: "Owner has been notified." });
+    // Fake SMS confirmation to the technician.
+    import("@/lib/notifications").then(({ sendSMS }) => {
+      sendSMS({ to: user.phone, toName: user.name.split(" ")[0], body: `Lemmon: You signed up for the ${customer} job. Details in the app.` });
+    });
   };
 
   const weekDays: Date[] = Array.from({ length: 7 }, (_, i) => {

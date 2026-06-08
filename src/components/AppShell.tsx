@@ -6,6 +6,9 @@ import {
   LogOut,
   Search,
   Timer,
+  LayoutDashboard,
+  ClipboardPlus,
+  Users,
 } from "lucide-react";
 import { useSession } from "@/lib/role";
 import { ClockBar } from "@/components/ClockBar";
@@ -21,34 +24,46 @@ const TECH_NAV: NavItem[] = [
   { to: "/tech/payroll", label: "Pay", icon: <Wallet className="size-5" /> },
 ];
 
-export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
-  const { user, signOut } = useSession();
+const OWNER_NAV: NavItem[] = [
+  { to: "/owner", label: "Dashboard", icon: <LayoutDashboard className="size-5" /> },
+  { to: "/owner/intake", label: "New job", icon: <ClipboardPlus className="size-5" /> },
+  { to: "/owner/team", label: "Team", icon: <Users className="size-5" /> },
+  { to: "/owner/payroll", label: "Payroll", icon: <Wallet className="size-5" /> },
+];
+
+export function AppShell({ requiredRole }: { requiredRole: "tech" | "owner" }) {
+  const { user, hydrated, signOut } = useSession();
   const nav = useNavigate();
   const loc = useLocation();
 
   useEffect(() => {
-    if (!user) nav({ to: "/" });
-    else if (user.role !== requiredRole) {
-      nav({ to: "/tech" });
+    if (!hydrated) return;
+    if (!user) {
+      nav({ to: "/" });
+    } else if (user.role !== requiredRole) {
+      nav({ to: user.role === "owner" ? "/owner" : "/tech" });
     }
-  }, [user, requiredRole, nav]);
+  }, [user, hydrated, requiredRole, nav]);
 
+  if (!hydrated) return null;
   if (!user || user.role !== requiredRole) return null;
 
-  const items = TECH_NAV;
+  const items = requiredRole === "owner" ? OWNER_NAV : TECH_NAV;
+  const home = requiredRole === "owner" ? "/owner" : "/tech";
+  const showClockBar = requiredRole === "tech";
 
   return (
     <div className="min-h-dvh flex flex-col">
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-border">
         <div className="mx-auto max-w-3xl px-4 h-14 flex items-center justify-between">
-          <Link to="/tech" className="flex items-center gap-2">
+          <Link to={home} className="flex items-center gap-2">
             <div className="size-8 rounded-lg bg-gradient-to-br from-[oklch(0.92_0.12_95)] to-[oklch(0.7_0.18_88)] flex items-center justify-center text-[oklch(0.16_0.01_90)] font-black text-sm shadow-[var(--shadow-glow)]">
               L
             </div>
             <div className="leading-tight">
               <div className="text-[13px] font-semibold tracking-tight">Lemmon</div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                Window Cleaning
+                {requiredRole === "owner" ? "Owner Console" : "Window Cleaning"}
               </div>
             </div>
           </Link>
@@ -56,7 +71,7 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
             <div className="text-right leading-tight hidden sm:block">
               <div className="text-xs font-medium">{user.name}</div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                Technician
+                {requiredRole === "owner" ? "Owner" : "Technician"}
               </div>
             </div>
             <div className="size-9 rounded-full bg-secondary border border-border grid place-items-center text-lg overflow-hidden" aria-hidden>
@@ -82,7 +97,7 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
 
       <main className="flex-1">
         <div className="mx-auto max-w-3xl px-4 py-5 pb-28">
-          <ClockBar />
+          {showClockBar && <ClockBar />}
           <Outlet />
         </div>
       </main>
@@ -90,7 +105,7 @@ export function AppShell({ requiredRole }: { requiredRole: "tech" | "admin" }) {
       <nav className="fixed bottom-0 inset-x-0 z-30 border-t border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto max-w-3xl px-2 py-2 grid" style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0,1fr))` }}>
           {items.map((it) => {
-            const active = loc.pathname === it.to || (it.to !== "/tech" && it.to !== "/admin" && loc.pathname.startsWith(it.to));
+            const active = loc.pathname === it.to || (it.to !== "/tech" && it.to !== "/owner" && loc.pathname.startsWith(it.to));
             return (
               <Link
                 key={it.to}
