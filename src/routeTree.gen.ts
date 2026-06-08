@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TechRouteImport } from './routes/tech'
+import { Route as OwnerRouteImport } from './routes/owner'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TechIndexRouteImport } from './routes/tech.index'
 import { Route as TechTimeRouteImport } from './routes/tech.time'
@@ -22,6 +23,11 @@ import { Route as TechJobsJobIdRouteImport } from './routes/tech.jobs.$jobId'
 const TechRoute = TechRouteImport.update({
   id: '/tech',
   path: '/tech',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerRoute = OwnerRouteImport.update({
+  id: '/owner',
+  path: '/owner',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -67,6 +73,7 @@ const TechJobsJobIdRoute = TechJobsJobIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/owner': typeof OwnerRoute
   '/tech': typeof TechRouteWithChildren
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/owner': typeof OwnerRoute
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
   '/tech/payroll': typeof TechPayrollRoute
@@ -89,6 +97,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/owner': typeof OwnerRoute
   '/tech': typeof TechRouteWithChildren
   '/tech/available': typeof TechAvailableRoute
   '/tech/calculator': typeof TechCalculatorRoute
@@ -102,6 +111,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/owner'
     | '/tech'
     | '/tech/available'
     | '/tech/calculator'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/owner'
     | '/tech/available'
     | '/tech/calculator'
     | '/tech/payroll'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/owner'
     | '/tech'
     | '/tech/available'
     | '/tech/calculator'
@@ -135,6 +147,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OwnerRoute: typeof OwnerRoute
   TechRoute: typeof TechRouteWithChildren
 }
 
@@ -145,6 +158,13 @@ declare module '@tanstack/react-router' {
       path: '/tech'
       fullPath: '/tech'
       preLoaderRoute: typeof TechRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/owner': {
+      id: '/owner'
+      path: '/owner'
+      fullPath: '/owner'
+      preLoaderRoute: typeof OwnerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -230,8 +250,19 @@ const TechRouteWithChildren = TechRoute._addFileChildren(TechRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OwnerRoute: OwnerRoute,
   TechRoute: TechRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
