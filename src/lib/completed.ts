@@ -5,17 +5,20 @@ export type CompletedJob = {
   customer: string;
   address: string;
   completedAt: string; // ISO
-  technicians: string[]; // usernames or display names
-  hoursWorked: number; // total job hours, will be split evenly
+  technicians: string[];
+  salesmen?: string[];
+  hoursWorked: number;
   baseRevenue: number;
   upsellRevenue: number;
   tips: number;
-  commissionRate: number; // e.g. 0.35 solo, 0.25 each on a crew
+  commissionRate: number;
   notes?: string;
-  paidTo: Record<string, boolean>; // technician name -> paid?
+  paidTo: Record<string, boolean>;
+  salesmanPaidTo?: Record<string, boolean>;
 };
 
 const KEY = "lwc.completed.v1";
+const SALESMAN_RATE = 0.10;
 const listeners = new Set<() => void>();
 const emit = () => listeners.forEach((l) => l());
 
@@ -44,12 +47,14 @@ function seed(): CompletedJob[] {
       address: "812 Linden Hill Dr, Austin TX",
       completedAt: new Date(now - 1 * day).toISOString(),
       technicians: ["Demo Tech"],
+      salesmen: [],
       hoursWorked: 2.5,
       baseRevenue: 385,
       upsellRevenue: 40,
       tips: 25,
       commissionRate: 0.35,
       paidTo: { "Demo Tech": false },
+      salesmanPaidTo: {},
     },
     {
       id: "C-3002",
@@ -57,12 +62,14 @@ function seed(): CompletedJob[] {
       address: "29 Magnolia Ct, Austin TX",
       completedAt: new Date(now - 2 * day).toISOString(),
       technicians: ["Demo Tech"],
+      salesmen: [],
       hoursWorked: 1.5,
       baseRevenue: 245,
       upsellRevenue: 0,
       tips: 20,
       commissionRate: 0.35,
       paidTo: { "Demo Tech": false },
+      salesmanPaidTo: {},
     },
   ];
   if (typeof window !== "undefined") localStorage.setItem(KEY, JSON.stringify(list));
@@ -93,6 +100,13 @@ export function markPaid(jobId: string, techName: string, paid = true) {
   write(list);
 }
 
+export function markSalesmanPaid(jobId: string, name: string, paid = true) {
+  const list = read().map((j) =>
+    j.id === jobId ? { ...j, salesmanPaidTo: { ...(j.salesmanPaidTo ?? {}), [name]: paid } } : j,
+  );
+  write(list);
+}
+
 // ---- Date helpers ----
 export function startOfWeek(d = new Date()) {
   const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -106,7 +120,7 @@ export function startOfYear(d = new Date()) {
   return new Date(d.getFullYear(), 0, 1);
 }
 
-// ---- Per-technician share of a single job ----
+// ---- Per-technician share ----
 export function techShare(job: CompletedJob, techName: string) {
   if (!job.technicians.includes(techName)) return null;
   const n = job.technicians.length || 1;
@@ -118,6 +132,27 @@ export function techShare(job: CompletedJob, techName: string) {
   const upsellBonus = upsell * 0.2;
   const total = commission + upsellBonus + tips;
   return { hours, base, upsell, tips, commission, upsellBonus, total };
+}
+
+// ---- Per-salesman share (flat 10% of base+upsell, split) ----
+export function salesmanShare(job: CompletedJob, name: string) {
+  const list = job.salesmen ?? [];
+  if (!list.includes(name)) return null;
+  const n = list.length || 1;
+  const total = ((job.baseRevenue + job.upsellRevenue) * SALESMAN_RATE) / n;
+  return { total, rate: SALESMAN_RATE };
+}
+
+export function totalSalesmanPay(job: CompletedJob) {
+  return (job.salesmen?.length ?? 0) > 0
+    ? (job.baseRevenue + job.upsellRevenue) * SALESMAN_RATE
+    : 0;
+}
+export function totalTechPay(job: CompletedJob) {
+  return job.technicians.reduce((sum, t) => sum + (techShare(job, t)?.total ?? 0), 0);
+}
+export function ownerCut(job: CompletedJob) {
+  return job.baseRevenue + job.upsellRevenue + job.tips - totalTechPay(job) - totalSalesmanPay(job);
 }
 
 // ---- Aggregations for a technician ----
@@ -144,19 +179,26 @@ export function payForTech(jobs: CompletedJob[], techName: string, start?: Date,
   const subtotal = commission + upsellBonus;
   const total = subtotal + tips;
   const hourly = hours > 0 ? subtotal / hours : 0;
-  return {
-    jobs: inRange.length,
-    hours,
-    base,
-    upsell,
-    tips,
-    commission,
-    upsellBonus,
-    total,
-    hourly,
-    owed,
-    paid,
-  };
+  return { jobs: inRange.length, hours, base, upsell, tips, commission, upsellBonus, total, hourly, owed, paid };
+}
+
+// ---- Aggregations for a salesman ----
+export function payForSalesman(jobs: CompletedJob[], name: string, start?: Date, end?: Date) {
+  const startMs = start?.getTime() ?? -Infinity;
+  const endMs = end?.getTime() ?? Infinity;
+  const inRange = jobs.filter((j) => {
+    const t = new Date(j.completedAt).getTime();
+    return t >= startMs && t <= endMs && (j.salesmen ?? []).includes(name);
+  });
+  let total = 0, owed = 0, paid = 0;
+  for (const j of inRange) {
+    const s = salesmanShare(j, name);
+    if (!s) continue;
+    total += s.total;
+    if (j.salesmanPaidTo?.[name]) paid += s.total;
+    else owed += s.total;
+  }
+  return { jobs: inRange.length, total, owed, paid };
 }
 
 // ---- Revenue across all jobs ----
@@ -175,7 +217,7 @@ export function revenueInRange(jobs: CompletedJob[], start?: Date, end?: Date) {
   return { revenue: base + upsell, base, upsell, tips, count };
 }
 
-// ---- Top performers ----
+// ---- Top performers (techs) ----
 export function topPerformers(jobs: CompletedJob[], start?: Date, end?: Date) {
   const startMs = start?.getTime() ?? -Infinity;
   const endMs = end?.getTime() ?? Infinity;
@@ -193,4 +235,83 @@ export function topPerformers(jobs: CompletedJob[], start?: Date, end?: Date) {
     }
   }
   return [...map.values()].sort((a, b) => b.revenue - a.revenue);
+}
+
+// ---- Top salesmen ----
+export function topSalesmen(jobs: CompletedJob[], start?: Date, end?: Date) {
+  const startMs = start?.getTime() ?? -Infinity;
+  const endMs = end?.getTime() ?? Infinity;
+  const map = new Map<string, { name: string; revenue: number; jobs: number; commission: number }>();
+  for (const j of jobs) {
+    const t = new Date(j.completedAt).getTime();
+    if (t < startMs || t > endMs) continue;
+    const list = j.salesmen ?? [];
+    const n = list.length || 1;
+    for (const s of list) {
+      const cur = map.get(s) || { name: s, revenue: 0, jobs: 0, commission: 0 };
+      cur.revenue += (j.baseRevenue + j.upsellRevenue) / n;
+      cur.jobs += 1;
+      cur.commission += ((j.baseRevenue + j.upsellRevenue) * SALESMAN_RATE) / n;
+      map.set(s, cur);
+    }
+  }
+  return [...map.values()].sort((a, b) => b.revenue - a.revenue);
+}
+
+// ---- Jobs/revenue grouped by day for charts ----
+export function revenueByDay(jobs: CompletedJob[], days = 14) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const out: { date: Date; label: string; revenue: number; count: number }[] = [];
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    out.push({
+      date: d,
+      label: d.toLocaleDateString("en-US", { weekday: "short" }),
+      revenue: 0,
+      count: 0,
+    });
+  }
+  const startMs = out[0].date.getTime();
+  const endMs = today.getTime() + 24 * 60 * 60 * 1000;
+  for (const j of jobs) {
+    const t = new Date(j.completedAt).getTime();
+    if (t < startMs || t >= endMs) continue;
+    const d = new Date(j.completedAt);
+    d.setHours(0, 0, 0, 0);
+    const idx = out.findIndex((b) => b.date.getTime() === d.getTime());
+    if (idx >= 0) {
+      out[idx].revenue += j.baseRevenue + j.upsellRevenue;
+      out[idx].count += 1;
+    }
+  }
+  return out;
+}
+
+export function revenueByMonth(jobs: CompletedJob[], months = 6) {
+  const now = new Date();
+  const out: { label: string; revenue: number; count: number; start: Date }[] = [];
+  for (let i = months - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    out.push({
+      label: d.toLocaleDateString("en-US", { month: "short" }),
+      revenue: 0,
+      count: 0,
+      start: d,
+    });
+  }
+  for (const j of jobs) {
+    const t = new Date(j.completedAt);
+    const idx = out.findIndex(
+      (b, i) =>
+        t >= b.start &&
+        (i === out.length - 1 || t < out[i + 1].start),
+    );
+    if (idx >= 0) {
+      out[idx].revenue += j.baseRevenue + j.upsellRevenue;
+      out[idx].count += 1;
+    }
+  }
+  return out;
 }
