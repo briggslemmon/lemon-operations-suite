@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { useSession } from "@/lib/role";
-import { useCompletedJobs, payForTech, startOfMonth } from "@/lib/completed";
-import { money, money2 } from "@/components/ui-bits";
+import { useCompletedJobs, payForTech, startOfMonth, topPerformers } from "@/lib/completed";
+import { money, money2, SectionTitle } from "@/components/ui-bits";
+import { Leaderboard } from "@/components/Charts";
+import { Trophy } from "lucide-react";
 
 export const Route = createFileRoute("/owner/team")({
   component: TeamPage,
@@ -12,17 +15,44 @@ function TeamPage() {
   const jobs = useCompletedJobs();
   const techs = listAccounts().filter((a) => a.role === "tech");
   const monthStart = startOfMonth();
+  const performers = useMemo(() => topPerformers(jobs, monthStart), [jobs]);
+
+  const leaderRows = performers.map((p) => {
+    const acct = techs.find((t) => `${t.firstName} ${t.lastName}`.trim() === p.tech);
+    return {
+      label: p.tech,
+      value: p.revenue,
+      sub: `${p.jobs} jobs · ${p.hours.toFixed(1)} hr`,
+      avatar: (
+        <div className="size-8 rounded-full bg-secondary border border-border grid place-items-center overflow-hidden shrink-0">
+          {acct?.avatar?.startsWith("data:") ? (
+            <img src={acct.avatar} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span>{acct?.avatar ?? "🙂"}</span>
+          )}
+        </div>
+      ),
+    };
+  });
 
   return (
     <div>
       <h1 className="text-2xl font-semibold tracking-tight">Team</h1>
       <p className="text-sm text-muted-foreground mt-1">Performance this month for every technician.</p>
 
-      <div className="grid gap-3 mt-5">
+      <SectionTitle title="Leaderboard · revenue this month" action={<Trophy className="size-4 text-gold" />} />
+      <div className="surface-card p-4">
+        {leaderRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground text-center py-3">No completed jobs this month yet.</div>
+        ) : (
+          <Leaderboard rows={leaderRows} format={(v) => money(v)} />
+        )}
+      </div>
+
+      <SectionTitle title="All technicians" />
+      <div className="grid gap-3">
         {techs.length === 0 && (
-          <div className="surface-card p-6 text-center text-sm text-muted-foreground">
-            No technicians yet.
-          </div>
+          <div className="surface-card p-6 text-center text-sm text-muted-foreground">No technicians yet.</div>
         )}
         {techs.map((t) => {
           const name = `${t.firstName} ${t.lastName}`.trim();
@@ -32,9 +62,7 @@ function TeamPage() {
             <div key={t.id} className="surface-card p-4">
               <div className="flex items-center gap-3">
                 <div className="size-12 rounded-full bg-secondary border border-border grid place-items-center overflow-hidden">
-                  {t.avatar?.startsWith("data:")
-                    ? <img src={t.avatar} alt="" className="w-full h-full object-cover" />
-                    : <span className="text-xl">{t.avatar}</span>}
+                  {t.avatar?.startsWith("data:") ? <img src={t.avatar} alt="" className="w-full h-full object-cover" /> : <span className="text-xl">{t.avatar}</span>}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-medium">{name}</div>
